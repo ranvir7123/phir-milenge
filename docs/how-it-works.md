@@ -1,6 +1,6 @@
 # How every phone ends on the same doc
 
-Phir Milenge has no server. Every phone keeps the whole doc, and phones swap what's new when they meet: one shows a moving code and the other's camera catches it, or one saves a small `.phir` file and the other opens it. They can meet in any order, as often as they like, and they always end on the same doc. This page explains why, in plain words.
+Relay Docs has no server. Every phone keeps the whole doc, and phones swap what's new when they meet: one shows a moving code and the other's camera catches it, or one saves a small `.relay` file and the other opens it. They can meet in any order, as often as they like, and they always end on the same doc. This page explains why, in plain words.
 
 ## The short version
 

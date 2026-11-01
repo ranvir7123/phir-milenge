@@ -1,4 +1,4 @@
-# Phir Milenge
+# Relay Docs
 
 **A document editor that works with no signal: phones swap what's new whenever they meet, by a moving code on the screen or a small file, in any order, and always end on the same doc.**
 
@@ -6,14 +6,14 @@
 
 <img src="docs/handin/app-qr.svg" width="180" alt="QR code that opens https://ranvir7123.github.io/phir-milenge/" />
 
-Open it once with internet, in Chrome on Android or Safari on iPhone (any recent browser works on a laptop). After that it works offline. "Phir milenge" means "we'll meet again"; it's painted on the backs of Indian trucks.
+Open it once with internet, in Chrome on Android or Safari on iPhone (any recent browser works on a laptop). After that it works offline. The name is the idea: your doc is passed hand to hand, like a relay. (The address says phir-milenge, the project's first name.)
 
 ## Try it in 60 seconds, at a desk, with no phones
 
 You need **two different browsers** (say Chrome and Edge) **or two browser profiles**. Two tabs or two windows of the same browser share one saved copy, so they act as one writer and there's nothing to sync.
 
 1. **Browser 1:** open the link, type a name (say "Rina"), tap **Start a new doc**, pick **Camp log**, and pick a colour. Under "Roads and boats", write: `Gosaba ferry runs at 6 am. Bring ration cards to the jetty.`
-2. In the **⋯** menu, tap **Save a file**. A small `.phir` file lands in your Downloads.
+2. In the **⋯** menu, tap **Save a file**. A small `.relay` file lands in your Downloads.
 3. **Browser 2:** open the link, type another name (say "Asif"), and tap **or open a file** under the buttons. Pick that file. You now have Rina's doc. Pick a colour.
 4. Now write apart, as if you had no signal:
    - In both browsers, change the first sentence of the ferry line, differently. Browser 1: `Gosaba ferry runs at 7 am.` Browser 2: `No ferry to Gosaba today.`
@@ -76,7 +76,7 @@ npm run typecheck
 npm test
 npm run build
 npm run selftest     # the 1,000-order test
-npm run demo:docs    # the stage demo's starting docs, as .phir files in demo-files/
+npm run demo:docs    # the stage demo's starting docs, as .relay files in demo-files/
 ```
 
 The stage demo's week of writing is prepared by `src/demo/scenario.ts`, with the times set to last week; every sync on stage is live. `?demo-setup` loads a device as one of the demo's writers.
