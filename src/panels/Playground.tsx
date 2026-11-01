@@ -17,8 +17,6 @@ import { SidePanel } from './SidePanel';
 import { TruckBack } from './TruckBack';
 import './panels.css';
 
-usePlayEngine(playIntents, playSelfTest(2));
-
 /** A doc only this laptop has: no rules, no clashes, no one else. */
 const emptyView: DocView = {
   ...sampleView,
