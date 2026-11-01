@@ -181,6 +181,25 @@
   white-space: nowrap;
 }
 
+/* Keyboard open on a phone: the toolbar moves to just above the keyboard. */
+.ed-kb {
+  padding-bottom: var(--kb, 0px);
+}
+
+.ed-kb .ed-toolbar {
+  order: 10;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 0;
+}
+
+.ed-kb .ed-note {
+  bottom: calc(var(--kb, 0px) + 56px);
+}
+
+.ed-kb .sh-wrap {
+  bottom: var(--kb, 0px);
+}
+
 /* ---------- Needs-look line and normal-sync label ---------- */
 
 .ed-look {

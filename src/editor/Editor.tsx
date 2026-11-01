@@ -3,7 +3,7 @@
 // what changed and turns it into intents. The engine's view is the only truth: when it changes, the editor's
 // document is brought in line with it, with the cursor kept where it was.
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { EditorContent, useEditor, type Editor as TiptapEditor } from '@tiptap/react';
 import type { Node as PMNode, Schema } from '@tiptap/pm/model';
@@ -585,13 +585,41 @@ export function Editor(props: EditorProps) {
     );
   };
 
+  // While the phone's keyboard is open, the toolbar sits just above it (the app hides its Catch/Beam bar).
+  const edRef = useRef<HTMLDivElement | null>(null);
+  const [keyboard, setKeyboard] = useState(0);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv || props.layout !== 'phone') {
+      setKeyboard(0);
+      return;
+    }
+    const measure = () => {
+      const el = edRef.current;
+      if (!el) return;
+      const covered = Math.round(el.getBoundingClientRect().bottom - (vv.offsetTop + vv.height));
+      setKeyboard(covered > 80 ? covered : 0);
+    };
+    measure();
+    vv.addEventListener('resize', measure);
+    vv.addEventListener('scroll', measure);
+    return () => {
+      vv.removeEventListener('resize', measure);
+      vv.removeEventListener('scroll', measure);
+    };
+  }, [props.layout]);
+
   const look = lanes ? needsLookLine(props.view) : null;
   const big = props.bigScreen;
   const phone = props.layout === 'phone';
 
   return (
     <FindQuery.Provider value={find?.query ?? ''}>
-    <div className={`ed ed-${props.layout}${big ? ' ed-big' : ''}${lanes ? '' : ' ed-ns'}`}>
+    <div
+      ref={edRef}
+      className={`ed ed-${props.layout}${big ? ' ed-big' : ''}${lanes ? '' : ' ed-ns'}${keyboard ? ' ed-kb' : ''}`}
+      style={keyboard ? ({ '--kb': `${keyboard}px` } as CSSProperties) : undefined}
+    >
       {editor && (
         <Toolbar
           editor={editor}
