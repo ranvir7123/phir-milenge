@@ -19,6 +19,7 @@ import {
   type MarkView,
   type RowView,
   type RuleDef,
+  type RuleResult,
   type RuleView,
   type SentenceView,
   type SettleRule,
@@ -92,7 +93,10 @@ export function resolveField<T>(ctx: Ctx, key: string): Field<T> | null {
 
   // Every current version, with the entry it came from. A "show these lanes again" value opens up.
   const raw: { lane: Lane<T>; src: Entry }[] = [];
+  const opened = new Set<string>(); // each entry opens once, so a made-up chain of lanes can't blow up
   const expand = (e: Entry, depth: number) => {
+    if (opened.has(e.ref)) return;
+    opened.add(e.ref);
     if (isLanesAgain(e.value)) {
       if (depth > 8) return;
       for (const r of e.value.$lanes) {
@@ -306,7 +310,13 @@ export function buildView(fold: Fold, docId: DocId, opts: ViewOptions = {}): Doc
     const f = resolveField<RuleDef>(ctx, keys.rule(r));
     if (!hasValue(f)) continue;
     const def = (f.shown?.value ?? f.lanes.find((l) => l.value !== null)?.value) as RuleDef;
-    rules.push({ id: r, field: f as Field<RuleDef>, result: checkRule(def, blocks, writers) });
+    let result: RuleResult;
+    try {
+      result = checkRule(def, blocks, writers);
+    } catch {
+      result = { state: 'unknown' }; // a rule with fields of the wrong kind is treated like a rule this version doesn't know
+    }
+    rules.push({ id: r, field: f as Field<RuleDef>, result });
   }
 
   const clashes: string[] = [];

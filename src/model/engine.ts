@@ -24,23 +24,49 @@ import { changeId, parseChangeId } from './ids';
 import { sortChanges } from './order';
 import { buildView } from './view';
 
+/** Writer ids are plain letters and digits, so one can never be mistaken for a built-in name. */
+const WRITER = /^[0-9a-z]{1,32}$/;
+const CHANGE_ID = /^[0-9a-z]{1,32}:[1-9][0-9]{0,8}$/;
+/** Counters stay far below where numbers lose exactness, so two changes never share an id. */
+const MAX_SEQ = 999_999_999;
+
 /** A change with the right shape. Anything else that arrives is skipped, never applied. */
 export function isChange(c: unknown): c is Change {
   if (!c || typeof c !== 'object') return false;
   const x = c as Partial<Change>;
   return (
     typeof x.actor === 'string' &&
+    WRITER.test(x.actor) &&
     typeof x.seq === 'number' &&
     Number.isInteger(x.seq) &&
     x.seq >= 1 &&
+    x.seq <= MAX_SEQ &&
     x.id === changeId(x.actor, x.seq) &&
     Array.isArray(x.deps) &&
-    x.deps.every((d) => typeof d === 'string') &&
+    x.deps.every((d) => typeof d === 'string' && CHANGE_ID.test(d)) &&
     typeof x.t === 'number' &&
     Number.isFinite(x.t) &&
     (x.kind === 'edit' || x.kind === 'note') &&
-    Array.isArray(x.ops)
+    Array.isArray(x.ops) &&
+    x.ops.every(isOp)
   );
+}
+
+/** Only the two op kinds, each with the right fields: a change from a file or a beam is checked before it's kept. */
+function isOp(op: unknown): boolean {
+  if (!op || typeof op !== 'object') return false;
+  const o = op as Record<string, unknown>;
+  if (o.o === 'set') {
+    return (
+      typeof o.k === 'string' &&
+      o.v !== undefined &&
+      (o.others === undefined || (Array.isArray(o.others) && o.others.every((r) => typeof r === 'string')))
+    );
+  }
+  if (o.o === 'ins') {
+    return typeof o.list === 'string' && typeof o.id === 'string' && (o.after === null || typeof o.after === 'string');
+  }
+  return false;
 }
 
 export class Engine implements DocEngine {

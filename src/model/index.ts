@@ -1,16 +1,13 @@
 // The engine every other track uses. Signatures: src/contracts/engine.ts.
 // Explanation: docs/plan/3-how-its-built.md, section 1.
 
-import type { ActorId, Change, DocEngine, DocId, EngineModule, Op, PhirDecodeResult } from '../contracts';
+import type { ActorId, Change, DocEngine, DocId, EngineModule, Op } from '../contracts';
 import { Engine } from './engine';
 import { newActorId, newDocId, newItemId } from './ids';
 import { intents } from './intents';
+import { decodePhir, encodePhir, PHIR_FORMAT } from './phir';
 import { runSelfTest } from './selftest';
 import { splitSentences } from './sentences';
-
-function notBuilt(name: string): never {
-  throw new Error(`Engine: ${name} is not built yet (track A)`);
-}
 
 export function openDoc(docId: DocId, me: ActorId, changes: Change[]): DocEngine {
   return new Engine(docId, me, changes);
@@ -28,11 +25,11 @@ export const engine: EngineModule = {
   newItemId,
   openDoc,
   createDoc,
-  encodePhir: () => notBuilt('encodePhir'),
-  decodePhir: (): PhirDecodeResult => notBuilt('decodePhir'),
+  encodePhir,
+  decodePhir,
   runSelfTest: (changes, orders, seed) => runSelfTest(changes, orders, seed),
   splitSentences,
   intents,
 };
 
-export { intents, splitSentences, newActorId, newDocId, newItemId, runSelfTest };
+export { intents, splitSentences, newActorId, newDocId, newItemId, runSelfTest, encodePhir, decodePhir, PHIR_FORMAT };

@@ -88,7 +88,7 @@ export class Fold {
 
   /** Apply one change. Its deps must already be applied (the fixed sort guarantees it). */
   apply(c: Change): void {
-    const clock: Clock = {};
+    const clock = Object.create(null) as Clock; // no built-in keys, whatever a writer id says
     for (const d of c.deps) {
       const dc = this.clocks.get(d);
       if (!dc) continue;

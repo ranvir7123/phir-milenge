@@ -483,6 +483,61 @@ describe('who has this, the trail, the normal-sync view, replay', () => {
   });
 });
 
+describe('who wrote what, formatting, and bad input', () => {
+  test('a block knows every writer whose words it shows', () => {
+    const { a, block } = start();
+    const b = copy(a, B);
+    b.commit(intents.setText(b.view(), block, 'One. Two by B. Three.'), at());
+    a.receive([...b.changes()], { actor: B, via: 'beam' });
+    expect(blockOf(a, block).writtenBy).toEqual([A, B]);
+    a.commit(intents.setText(a.view(), block, 'One. Two by A. Three.'), at());
+    expect(blockOf(a, block).writtenBy).toEqual([A]);
+  });
+
+  test('bold on one phone and not bold on another: the later writer time wins, no clash', () => {
+    const { a, block } = start();
+    a.commit(intents.setMark(block, 'bold', 'Two', 1, true), at());
+    const b = copy(a, B);
+    b.commit(intents.setMark(block, 'bold', 'Two', 1, false), at());
+    a.commit(intents.setMark(block, 'italic', 'One', 1, true), at());
+    a.receive([...b.changes()], { actor: B, via: 'beam' });
+    expect(blockOf(a, block).marks).toEqual([{ type: 'italic', quote: 'One', occurrence: 1 }]);
+    expect(a.view().needsLook.clashes).toEqual([]);
+  });
+
+  test('a change with a bad op is refused, and the doc stays as it was', () => {
+    const { a } = start();
+    const before = a.fingerprint();
+    const bad = { id: `${B}:1`, actor: B, seq: 1, deps: [...a.heads()], t: 1, kind: 'edit', ops: [{ o: 'set', k: 5, v: 'x' }] };
+    const proto = { id: '__proto__:1', actor: '__proto__', seq: 1, deps: [], t: 1, kind: 'edit', ops: [] };
+    const huge = { id: `${B}:${2 ** 53}`, actor: B, seq: 2 ** 53, deps: [], t: 1, kind: 'edit', ops: [] };
+    const r = a.receive([bad, null, proto, huge] as unknown as Change[], { actor: B, via: 'file' });
+    expect(r.added).toEqual([]);
+    expect(a.fingerprint()).toEqual(before);
+  });
+
+  test('a made-up chain of "show these lanes again" values stays quick', () => {
+    const { a, block } = start();
+    const key = blockOf(a, block).sentences[0]!.field.key;
+    // Each change points at every earlier one: opening every path, even 8 deep, would take millions of steps.
+    const refs = [...a.changes()].map((c) => c.id).slice(0, 1);
+    for (let i = 0; i < 40; i++) refs.push(a.commit([{ o: 'set', k: key, v: { $lanes: [...refs] } }], at()).id);
+    const started = Date.now();
+    a.view();
+    expect(Date.now() - started).toBeLessThan(500);
+  });
+
+  test('every intent is there', () => {
+    const names = [
+      'setTitle', 'setText', 'insertBlock', 'deleteBlock', 'setStyle', 'setTick', 'setMark', 'pick', 'unpick', 'setSettle',
+      'createTable', 'addColumn', 'setColumn', 'addRow', 'setCell', 'deleteRow', 'setTableName', 'addRule', 'deleteRule',
+      'setWriterName', 'setWriterColour', 'setTemplate',
+    ];
+    for (const n of names) expect(typeof (intents as unknown as Record<string, unknown>)[n], n).toBe('function');
+    expect(Object.keys(intents).sort()).toEqual([...names].sort());
+  });
+});
+
 describe('the module', () => {
   test('ids have the right shapes', () => {
     expect(model.newActorId()).toMatch(/^[0-9a-f]{16}$/);
