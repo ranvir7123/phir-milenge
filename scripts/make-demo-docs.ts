@@ -1,4 +1,4 @@
-// npm run demo:docs: writes the demo's four starting docs as .phir files into demo-files/ (for the
+// npm run demo:docs: writes the demo's four starting docs as .relay files into demo-files/ (for the
 // pen drive), and as src/demo/starting-files.ts (so the demo setup page works offline). Prints each
 // file's size and how long one beam of it takes. Same bytes every run.
 
@@ -14,7 +14,8 @@ const outDir = join(root, 'demo-files');
 const files = startingFiles(engine);
 
 mkdirSync(outDir, { recursive: true });
-for (const old of readdirSync(outDir)) if (old.endsWith('.phir')) rmSync(join(outDir, old));
+// Older runs wrote .phir files; clear those too, so the pen drive never gets two copies.
+for (const old of readdirSync(outDir)) if (old.endsWith('.relay') || old.endsWith('.phir')) rmSync(join(outDir, old));
 for (const f of files.docs) writeFileSync(join(outDir, f.fileName), f.bytes);
 
 const lines = [

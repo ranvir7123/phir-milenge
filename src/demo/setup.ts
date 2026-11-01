@@ -10,7 +10,7 @@ import type { RoleInfo } from './writers';
 export interface StartingFileData {
   fileName: string;
   size: number;
-  /** The .phir file, base64. */
+  /** The .relay file, base64. */
   phir: string;
 }
 
@@ -42,7 +42,7 @@ export function fromBase64(text: string): Uint8Array {
 }
 
 const WHY_UNREADABLE = {
-  'not-phir': "it isn't a Phir Milenge file",
+  'not-phir': "it isn't a Relay Docs file",
   newer: 'it was made by a newer version of the app',
   damaged: 'it is damaged',
 } as const;

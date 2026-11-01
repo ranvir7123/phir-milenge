@@ -260,7 +260,7 @@ export interface StartingFile {
   bytes: Uint8Array;
 }
 
-/** The starting docs as .phir files, plus the whole doc after every catch (for the size check). */
+/** The starting docs as .relay files, plus the whole doc after every catch (for the size check). */
 export function startingFiles(m: EngineModule): { docs: StartingFile[]; everything: Uint8Array } {
   const s = buildScenario(m);
   // Encoding runs on the same fixed clock, so a file never carries the time it was made.
@@ -276,11 +276,11 @@ export function startingFiles(m: EngineModule): { docs: StartingFile[]; everythi
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-/** "Camp log - Sundarbans cyclone relief - Rina - Fri 8.00 am.phir", as "Save a file" names it. */
+/** "Camp log - Sundarbans cyclone relief - Rina - Fri 8.00 am.relay", as "Save a file" names it. */
 export function fileName(title: string, writer: string, t: number): string {
   const d = new Date(t + 330 * 60_000); // read as UTC fields = India time
   const h = d.getUTCHours();
   const clock = `${h % 12 === 0 ? 12 : h % 12}.${String(d.getUTCMinutes()).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
   const safe = title.replace(/[\\/:*?"<>|]+/g, ' -').replace(/\s+/g, ' ').trim();
-  return `${safe} - ${writer} - ${DAYS[d.getUTCDay()]} ${clock}.phir`;
+  return `${safe} - ${writer} - ${DAYS[d.getUTCDay()]} ${clock}.relay`;
 }

@@ -22,9 +22,9 @@ const lanesOf = (f: Field<unknown>) => f.lanes.map((l) => l.actor).sort();
 describe('fileName', () => {
   it('names a file the way "Save a file" does, in India time', () => {
     expect(fileName('Camp log: Sundarbans cyclone relief', 'Rina', TIMES.rinaFerry)).toBe(
-      'Camp log - Sundarbans cyclone relief - Rina - Mon 6.05 am.phir',
+      'Camp log - Sundarbans cyclone relief - Rina - Mon 6.05 am.relay',
     );
-    expect(fileName('Camp log', 'Asif', TIMES.asifFerry)).toBe('Camp log - Asif - Mon 4.10 pm.phir');
+    expect(fileName('Camp log', 'Asif', TIMES.asifFerry)).toBe('Camp log - Asif - Mon 4.10 pm.relay');
   });
 });
 
@@ -51,7 +51,7 @@ describe.skipIf(!engineBuilt)('the demo starting docs', () => {
     }
   });
 
-  it('reads back from its .phir file unchanged', () => {
+  it('reads back from its .relay file unchanged', () => {
     for (const f of startingFiles(m).docs) {
       const back = m.decodePhir(f.bytes);
       expect(back.ok).toBe(true);
