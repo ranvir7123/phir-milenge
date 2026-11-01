@@ -7,7 +7,8 @@ export const blank: TemplateInfo = {
   id: 'blank',
   name: 'Blank doc',
   description: 'An empty page',
-  ops: (_me, _intents, newItemId) => page({ title: 'Untitled doc', template: 'blank', newItemId }).ops(),
+  // An empty title: the editor shows "Untitled doc" as a quiet hint, so typing replaces it.
+  ops: (_me, _intents, newItemId) => page({ title: '', template: 'blank', newItemId }).ops(),
 };
 
 /** The column names of the Camp log's table, in the order the fill-in sheet shows them. */

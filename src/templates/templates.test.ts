@@ -60,9 +60,9 @@ describe('templates', () => {
     expect(campLog.ops('x', noIntents, counter())).toEqual(campLog.ops('x', noIntents, counter()));
   });
 
-  it('Blank doc is "Untitled doc" with an empty page', () => {
+  it('Blank doc has an empty title, so the editor shows "Untitled doc" as a hint until you type', () => {
     const ops = opsOf('blank');
-    expect(sets(ops).get('title')).toBe('Untitled doc');
+    expect(sets(ops).get('title')).toBe('');
     expect(ops.some((o) => o.o === 'ins')).toBe(false);
   });
 
