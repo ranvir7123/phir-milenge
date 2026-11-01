@@ -7,8 +7,8 @@ import type { BlockKind, BlockStyle, BlockView, DocView, ItemId, ListKind, MarkT
 import { linkAllowed } from './words';
 
 /**
- * Where a sentence with two versions sits in the editor's text. intents.setText is given the block's text
- * without those sentences (the engine leaves them alone), so this never reaches the engine.
+ * Where a sentence with two versions sits in the text given to intents.setText: one per such sentence, in order,
+ * so new words land on the side they were typed. The same character as the engine's CLASH_SLOT.
  */
 export const CLASH_MARK = '￼';
 
@@ -85,9 +85,9 @@ function segments(block: BlockView, lanes: boolean): Seg[] {
   return segs;
 }
 
-/** The block's text the way intents.setText takes it: without the sentences that are in clash. */
+/** The block's text the way intents.setText takes it: one CLASH_MARK where each sentence in clash sits. */
 export function viewEngineText(block: BlockView): string {
-  return block.sentences.map((s) => (s.field.state === 'clash' ? '' : (s.field.shown?.value ?? ''))).join('');
+  return block.sentences.map((s) => (s.field.state === 'clash' ? CLASH_MARK : (s.field.shown?.value ?? ''))).join('');
 }
 
 /** The block's words only, the text marks are counted in. */
@@ -206,6 +206,7 @@ export function readBlock(node: PMNode): { engineText: string; plainText: string
   node.forEach((child) => {
     if (child.type.name === 'clash') {
       clashes.push(String(child.attrs.key));
+      engineText += CLASH_MARK;
       return;
     }
     if (!child.isText) return;
