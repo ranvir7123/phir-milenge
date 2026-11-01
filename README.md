@@ -26,7 +26,7 @@ You need **two different browsers** (say Chrome and Edge) **or two browser profi
 
 ```mermaid
 flowchart LR
-  R["Rina's phone<br/>her changes"] -- "beam or file" --> S
+  R["Rina's phone<br/>Rina's changes"] -- "beam or file" --> S
   A["Asif's phone<br/>Asif's changes"] -- "beam or file" --> S
   T["Tanmoy's phone<br/>Tanmoy's changes"] -- "beam or file" --> S
   S["Every change, put in one fixed order<br/>(worked out from the changes alone)"] --> D["Replayed onto an empty page:<br/>the same doc on every phone"]
@@ -49,9 +49,9 @@ npm ci
 npm run selftest
 ```
 
-Three simulated phones (Rina, Asif and Tanmoy) start from one Camp log and write apart: two rewrites of the same sentence, changes to different sentences of one paragraph, a delete against an edit, two rows breaking "one kit per ration card", two changes to one table cell, a pick and its undo, and "Keep the newest one". Each step prints what it expected and whether it got it.
+Four simulated phones (Base camp, Rina, Asif and Tanmoy) start from one Camp log and write apart: two rewrites of the same sentence, changes to different sentences of one paragraph, a delete against an edit, two rows breaking "one kit per ration card", two changes to one table cell, a pick and its undo, and "Keep the newest one". Each step prints "passed" or "FAILED" and what it found.
 
-Then every phone's changes are shuffled into 1,000 different arrival orders and fed through the same path a real catch uses. The last line reads **"1000 of 1000 the same: \<three words\>"**: all 1,000 orders produced the exact same doc, down to its truck back. If any order came out different, it says how many, and saves that order so it can be replayed. It's 1,000 tries, not a proof.
+Then every phone catches every other, each phone's truck back words are printed, and all the changes are shuffled into 1,000 different arrival orders and fed through the same path a real catch uses. The last line reads **"1000 of 1000 the same: \<three words\>"**: all 1,000 orders produced the exact same doc, down to its truck back. If any order came out different, the last line starts with FAILED and says how many were the same. The shuffles come from a fixed starting number, so a failing run repeats exactly. It's 1,000 tries, not a proof.
 
 The same test runs inside the app: on the laptop, **⋯ → Run the 1,000-order test**.
 

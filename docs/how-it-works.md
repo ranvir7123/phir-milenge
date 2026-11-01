@@ -57,7 +57,7 @@ Neither had seen the other's change. When both reach Base camp, each sentence of
 Other cases work the same way:
 
 - **Different sentences of one paragraph:** Rina changes the first sentence of the road line ("…open for trucks until 4 pm.") and Asif changes the second ("…Diesel is at the Canning pump, 40 litres left."). Each sentence has only one new value, so both changes simply appear. No clash.
-- **A delete against an edit:** Tanmoy deletes the doctor's-boat paragraph while Rina adds "by 9 am" to it. Rina's sentence shows as two versions, "Deleted by Tanmoy" and her words. The sentences only Tanmoy touched are simply gone.
+- **A delete against an edit:** Tanmoy deletes the doctor's-boat paragraph while Rina adds "by 9 am" to it. Rina's sentence shows as two versions, "Deleted by Tanmoy" and Rina's words. The sentences only Tanmoy touched are simply gone.
 - **A table cell:** Rina writes "Family kit" and Tanmoy writes "Tarpaulin" in the same cell. A cell is always kept whole, so it shows two versions.
 - **Style (heading or paragraph), bold, italic, links:** these never clash. The later writer's time wins.
 
