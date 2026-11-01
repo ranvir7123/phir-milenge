@@ -119,7 +119,7 @@ export function SelfTestView({ engine, bigScreen, layout, onClose }: SelfTestVie
     );
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([body], { type: 'application/json' }));
-    a.download = `phir-milenge-${run.differing.length}-orders.json`;
+    a.download = `relay-docs-${run.differing.length}-orders.json`;
     a.click();
     window.setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
@@ -246,7 +246,7 @@ function Headline({ run, finished, running }: { run: Run; finished: boolean; run
         {num(run.same)} of {total} the same.
       </h2>
       <p>
-        {num(n)} {n === 1 ? 'order' : 'orders'} came out different. {n === 1 ? "It's" : "They're"} outlined and listed below. That's a bug in Phir Milenge's merging. Your doc is unchanged,
+        {num(n)} {n === 1 ? 'order' : 'orders'} came out different. {n === 1 ? "It's" : "They're"} outlined and listed below. That's a bug in how Relay Docs merges. Your doc is unchanged,
         because the test only used a copy.
       </p>
       {slowLine}

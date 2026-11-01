@@ -57,12 +57,6 @@
   flex: none;
 }
 
-.pn-display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.2;
-}
-
 .pn-quiet {
   color: var(--quiet);
 }

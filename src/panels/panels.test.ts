@@ -131,7 +131,7 @@ describe('what the Caught screen says', () => {
     const behind = summarise(engine, playView, catchResult('behind', RINA, changes), 'Rina', NOW);
     expect(behind).toMatchObject({ kind: 'behind', title: 'Nothing new from Rina', body: 'You already had everything Rina beamed. Rina is missing 7 of your changes.' });
     const even = summarise(engine, playView, catchResult('even', RINA, changes), 'Rina', NOW);
-    expect(even).toMatchObject({ kind: 'even', title: 'Already caught up with Rina' });
+    expect(even).toMatchObject({ kind: 'even', title: 'Already caught up with Rina', body: 'You both have the same doc.' });
   });
 
   it('cuts a long sender name everywhere', () => {

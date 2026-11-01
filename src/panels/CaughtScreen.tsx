@@ -132,9 +132,7 @@ export function CaughtScreen({ engine, view, result, fromName, onBeamBack, onRea
           ) : (
             <>
               <h2 id="pn-caught-title">Already caught up with {name}.</h2>
-              <p className="pn-display" style={{ fontSize: bigScreen ? 40 : 24 }}>
-                Phir milenge.
-              </p>
+              <p>{summary.body}</p>
               <div className="pn-acts" style={{ marginTop: 8 }}>
                 <button type="button" className="pn-btn pn-btn-main pn-btn-bar" onClick={onDone}>
                   Back to the doc

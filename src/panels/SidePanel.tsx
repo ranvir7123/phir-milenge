@@ -181,7 +181,7 @@ export function SidePanel(props: SidePanelProps) {
                 </span>
                 <div className="pn-rule-body">
                   <span className="pn-rule-name">Can't check this rule.</span>
-                  <span className="pn-rule-sub">It was made in a newer Phir Milenge. It's kept in the doc and travels on, but this {here} can't check it.</span>
+                  <span className="pn-rule-sub">It was made in a newer version of Relay Docs. It's kept in the doc and travels on, but this {here} can't check it.</span>
                 </div>
               </div>
             );

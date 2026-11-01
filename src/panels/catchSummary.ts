@@ -145,7 +145,7 @@ export function summarise(engine: DocEngine, view: DocView, result: ReceiveResul
         beamBack: true,
       };
     }
-    return { kind: 'even', title: `Already caught up with ${fromName}`, body: 'Phir milenge.', beamBack: false };
+    return { kind: 'even', title: `Already caught up with ${fromName}`, body: 'You both have the same doc.', beamBack: false };
   }
 
   const index = new Map(engine.changes().map((c) => [c.id, c]));
