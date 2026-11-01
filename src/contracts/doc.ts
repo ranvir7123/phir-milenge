@@ -120,6 +120,8 @@ export interface Field<T> {
   kept: Lane<T>[];
   /** Set when state is 'settled'. */
   how?: SettleRule;
+  /** Set when a "Keep this one" made `shown` the version shown: who picked it ("Kept by Asif · 1 other"). */
+  pickedBy?: ActorId;
 }
 
 export type BlockKind = 'p' | 'h1' | 'h2' | 'h3' | 'li' | 'table';
@@ -189,7 +191,19 @@ export interface BlockView {
 
 export type RuleDef =
   /** name: the rule's short name ("One kit per ration card"), used in every message and the Rules panel. */
-  | { kind: 'unique'; table: ItemId; column: ItemId; name?: string }
+  | {
+      /** "In [table], each [column] can have [of] = [value] only [times] time." */
+      kind: 'unique';
+      table: ItemId;
+      column: ItemId;
+      name?: string;
+      /** The column whose value is counted, for example Kit. Absent: count the rows themselves. */
+      of?: ItemId;
+      /** Count only rows where `of` is this value. Absent: any value. */
+      value?: string;
+      /** How many times each value of `column` may appear. Absent: 1. */
+      times?: number;
+    }
   | {
       kind: 'limit';
       /** The rule's short name ("Tarpaulins stay within 500"). */
