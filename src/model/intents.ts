@@ -40,14 +40,37 @@ function typeable(f: Field<string>): string | null {
   return typeof f.shown?.value === 'string' ? f.shown.value : null;
 }
 
+/** Stands where a sentence in clash sits in the text the editor passes to setText: one per such sentence, in order. */
+export const CLASH_SLOT = '￼';
+
 /**
- * The block's new text, without the sentences in clash (those show as lanes and are changed by picking).
- * Unchanged sentences at the start and end are matched; the ones between are rewritten, added or deleted.
+ * The block's new text. Sentences in clash show as lanes and are changed by picking, so they are never written:
+ * the editor puts one CLASH_SLOT where each sits, and new text lands on the side of it where it was typed.
+ * Text with no markers (or markers that no longer match, because the doc changed) is placed around them as best it can.
  */
 function setText(view: DocView, block: ItemId, text: string): Op[] {
   const b = findBlock(view, block);
   if (!b || b.table) return [];
-  const old = b.sentences
+  const parts = text.split(CLASH_SLOT);
+  const clashAt = b.sentences.flatMap((s, i) => (s.field.state === 'clash' ? [i] : []));
+  if (parts.length !== clashAt.length + 1) return rewrite(b, 0, b.sentences.length, null, parts.join(''));
+  const ops: Op[] = [];
+  let from = 0;
+  parts.forEach((part, k) => {
+    const to = k < clashAt.length ? clashAt[k]! : b.sentences.length;
+    ops.push(...rewrite(b, from, to, from > 0 ? b.sentences[from - 1]!.id : null, part));
+    from = to + 1;
+  });
+  return ops;
+}
+
+/**
+ * Rewrites the typeable sentences in b.sentences[from, to) to `text`; `anchor` is the slot just before `from`.
+ * Unchanged sentences at the start and end are matched; the ones between are rewritten, added or deleted.
+ */
+function rewrite(b: BlockView, from: number, to: number, anchor: ItemId | null, text: string): Op[] {
+  const span = b.sentences.slice(from, to);
+  const old = span
     .map((s) => ({ id: s.id, text: typeable(s.field) }))
     .filter((s): s is { id: ItemId; text: string } => s.text !== null);
   const next = splitSentences(text);
@@ -64,18 +87,18 @@ function setText(view: DocView, block: ItemId, text: string): Op[] {
   const newMid = next.slice(pre, next.length - post);
   const ops: Op[] = [];
   const pairs = Math.min(oldMid.length, newMid.length);
-  for (let i = 0; i < pairs; i++) ops.push({ o: 'set', k: keys.sentence(block, oldMid[i]!.id), v: newMid[i]! });
-  for (let i = pairs; i < oldMid.length; i++) ops.push({ o: 'set', k: keys.sentence(block, oldMid[i]!.id), v: null });
+  for (let i = 0; i < pairs; i++) ops.push({ o: 'set', k: keys.sentence(b.id, oldMid[i]!.id), v: newMid[i]! });
+  for (let i = pairs; i < oldMid.length; i++) ops.push({ o: 'set', k: keys.sentence(b.id, oldMid[i]!.id), v: null });
   if (newMid.length > pairs) {
     // New sentences go right after the typeable sentence before them. Added before every typeable sentence,
-    // they go after whatever comes before the first one (a sentence in clash, or the start).
+    // they go after whatever comes before the first one (a sentence in clash, or the anchor).
     let after: ItemId | null;
     if (pre + pairs > 0) after = old[pre + pairs - 1]!.id;
     else if (old.length > 0) {
-      const first = b.sentences.findIndex((s) => s.id === old[0]!.id);
-      after = first > 0 ? b.sentences[first - 1]!.id : null;
-    } else after = lastId(b.sentences);
-    ops.push(...sentenceOps(block, after, newMid.slice(pairs)));
+      const first = span.findIndex((s) => s.id === old[0]!.id);
+      after = first > 0 ? span[first - 1]!.id : anchor;
+    } else after = span.length > 0 ? span[span.length - 1]!.id : anchor;
+    ops.push(...sentenceOps(b.id, after, newMid.slice(pairs)));
   }
   return ops;
 }

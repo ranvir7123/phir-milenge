@@ -305,6 +305,57 @@ describe('setText', () => {
     expect(b.sentences.map((s) => s.field.state)).toEqual(['one', 'clash', 'one', 'one']);
     expect(field().state).toBe('clash');
   });
+
+  // The editor puts one U+FFFC where each sentence in clash sits, so new text lands on the side it was typed.
+  const SLOT = '￼';
+  const shape = (b: BlockView) =>
+    b.sentences.map((s) => (s.field.state === 'clash' ? '[two versions]' : String(s.field.shown?.value ?? '')));
+
+  test('with a marker for the sentence in clash, a new sentence lands before or after it, as typed', () => {
+    const { a, block } = clashed(); // One. [Two by A | Two by B] Three.
+    a.commit(intents.setText(a.view(), block, `One. ${SLOT}New after. Three.`), at());
+    expect(shape(blockOf(a, block))).toEqual(['One. ', '[two versions]', 'New after. ', 'Three.']);
+    a.commit(intents.setText(a.view(), block, `One. New before. ${SLOT}New after. Three.`), at());
+    expect(shape(blockOf(a, block))).toEqual(['One. ', 'New before. ', '[two versions]', 'New after. ', 'Three.']);
+  });
+
+  test('a marker at the very start keeps new text after the clash; text before it goes first', () => {
+    const { a, block } = start();
+    const b = copy(a, B);
+    a.commit(intents.setText(a.view(), block, 'One by A. Two. Three.'), at());
+    b.commit(intents.setText(b.view(), block, 'One by B. Two. Three.'), at());
+    a.receive([...b.changes()], { actor: B, via: 'beam' });
+    a.commit(intents.setText(a.view(), block, `${SLOT}After. Two. Three.`), at());
+    expect(shape(blockOf(a, block))).toEqual(['[two versions]', 'After. ', 'Two. ', 'Three.']);
+    a.commit(intents.setText(a.view(), block, `First. ${SLOT}After. Two. Three.`), at());
+    expect(shape(blockOf(a, block))).toEqual(['First. ', '[two versions]', 'After. ', 'Two. ', 'Three.']);
+  });
+
+  test('two sentences in clash: each marker matches one, in order, and nothing is written to them', () => {
+    const { a, block } = start('One. Two. Three. Four.');
+    const b = copy(a, B);
+    a.commit(intents.setText(a.view(), block, 'One. Two by A. Three. Four by A.'), at());
+    b.commit(intents.setText(b.view(), block, 'One. Two by B. Three. Four by B.'), at());
+    a.receive([...b.changes()], { actor: B, via: 'beam' });
+    const clashKeys = blockOf(a, block).sentences.filter((s) => s.field.state === 'clash').map((s) => s.field.key);
+    expect(clashKeys.length).toBe(2);
+    const ops = intents.setText(a.view(), block, `One. ${SLOT}Middle. ${SLOT}End.`);
+    expect(ops.some((o) => o.o === 'set' && clashKeys.includes(o.k))).toBe(false);
+    expect(JSON.stringify(ops)).not.toContain(SLOT);
+    a.commit(ops, at());
+    expect(shape(blockOf(a, block))).toEqual(['One. ', '[two versions]', 'Middle. ', '[two versions]', 'End.']);
+    a.commit(intents.setText(a.view(), block, `${SLOT}${SLOT}`), at()); // everything else deleted
+    expect(shape(blockOf(a, block))).toEqual(['[two versions]', '[two versions]']);
+  });
+
+  test('markers that no longer match the sentences in clash are dropped, and never written', () => {
+    const { a, block } = start();
+    expect(intents.setText(a.view(), block, `One. ${SLOT}Two. Three.`)).toEqual([]);
+    const ops = intents.setText(a.view(), block, `One. ${SLOT}Two. ${SLOT}Three. Four.`);
+    expect(JSON.stringify(ops)).not.toContain(SLOT);
+    a.commit(ops, at());
+    expect(shape(blockOf(a, block))).toEqual(['One. ', 'Two. ', 'Three. ', 'Four.']);
+  });
 });
 
 describe('tables, ticks, marks, lists', () => {

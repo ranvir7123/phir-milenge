@@ -4,7 +4,7 @@
 import type { ActorId, Change, DocEngine, DocId, EngineModule, Op } from '../contracts';
 import { Engine } from './engine';
 import { newActorId, newDocId, newItemId } from './ids';
-import { intents } from './intents';
+import { CLASH_SLOT, intents } from './intents';
 import { decodePhir, encodePhir, PHIR_FORMAT } from './phir';
 import { runSelfTest } from './selftest';
 import { splitSentences } from './sentences';
@@ -32,4 +32,4 @@ export const engine: EngineModule = {
   intents,
 };
 
-export { intents, splitSentences, newActorId, newDocId, newItemId, runSelfTest, encodePhir, decodePhir, PHIR_FORMAT };
+export { CLASH_SLOT, intents, splitSentences, newActorId, newDocId, newItemId, runSelfTest, encodePhir, decodePhir, PHIR_FORMAT };
