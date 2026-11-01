@@ -34,6 +34,11 @@ export interface EditorProps extends DocProps {
   onOpen(what: 'replay' | 'find' | 'outline' | 'add-rule' | 'needs-look' | 'beam' | 'catch' | 'menu'): void;
   /** Scroll to and briefly highlight a block (from the side panel, find, outline). */
   focusBlock: ItemId | null;
+  /**
+   * The phone's "⋯" menu (drawn by the app shell) asks the editor to open one of its own panels.
+   * Open it whenever `at` changes. Absent or null: nothing asked.
+   */
+  request?: { what: 'find' | 'outline' | 'word-count'; at: number } | null;
 }
 
 export interface SidePanelProps extends DocProps {
