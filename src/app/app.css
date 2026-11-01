@@ -191,6 +191,109 @@
 .home-warn {
   font-size: 15px;
 }
+.home-warn b {
+  color: var(--warning);
+}
+.home-warn-links {
+  display: flex;
+  gap: 20px;
+}
+.home-warn-links .inline-link {
+  min-height: 44px;
+}
+.inline-link.is-quiet {
+  color: var(--quiet);
+  font-weight: 400;
+}
+
+/* The iPhone "Keep it on your home screen" card. */
+.home-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: var(--sheet);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.home-card p {
+  margin: 0;
+}
+.home-card-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* "Add to your home screen": three small pictures of Safari's own buttons. */
+.how-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.how-steps li {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 14px;
+  align-items: center;
+  line-height: 1.45;
+}
+.how-pic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  border-radius: 8px;
+  background: var(--raised);
+}
+.how-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--page);
+}
+.how-add {
+  font-weight: 700;
+}
+.how-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 108px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--page);
+  font-size: 11px;
+  line-height: 1.2;
+}
+.how-plus {
+  display: inline-flex;
+  flex: none;
+  padding: 1px;
+  border: 1.5px solid var(--text);
+  border-radius: 4px;
+}
+@media (max-width: 359px) {
+  .how-steps li {
+    grid-template-columns: 96px 1fr;
+    gap: 12px;
+  }
+  .how-row {
+    width: 88px;
+    font-size: 10px;
+  }
+}
 .home-empty {
   margin: 0;
   padding: 16px 0;

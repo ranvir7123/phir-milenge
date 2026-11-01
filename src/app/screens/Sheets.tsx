@@ -164,6 +164,49 @@ export function Sheets(p: SheetsProps) {
         </Sheet>
       );
 
+    case 'home-screen-how':
+      return (
+        <Sheet label="Add to your home screen" onClose={p.onClose}>
+          <h2>Add to your home screen</h2>
+          <ol className="how-steps">
+            <li>
+              <span className="how-pic" aria-hidden="true">
+                <span className="how-key">
+                  <Icon name="share" size={22} />
+                </span>
+              </span>
+              <span>
+                In Safari, tap <b>Share</b>. On newer iPhones, tap <b>⋯</b> first.
+              </span>
+            </li>
+            <li>
+              <span className="how-pic" aria-hidden="true">
+                <span className="how-row">
+                  Add to Home Screen
+                  <span className="how-plus">
+                    <Icon name="plus" size={14} />
+                  </span>
+                </span>
+              </span>
+              <span>
+                Scroll down and tap <b>Add to Home Screen</b>.
+              </span>
+            </li>
+            <li>
+              <span className="how-pic" aria-hidden="true">
+                <span className="how-key how-add">Add</span>
+              </span>
+              <span>
+                Tap <b>Add</b>. From now on, open Phir Milenge from its icon.
+              </span>
+            </li>
+          </ol>
+          <button type="button" className="ui-btn ui-btn-main ui-btn-tall" onClick={p.onClose}>
+            Done
+          </button>
+        </Sheet>
+      );
+
     case 'message':
       return (
         <Sheet label={sheet.message.title} onClose={p.onClose}>

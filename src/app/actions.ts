@@ -8,6 +8,7 @@ import { makeSummary, titleOf } from './summary';
 import { onlyOnThisPhone } from './caughtUp';
 import { downloadFile, phirFileName, pickFiles, readFile, shareFile } from './files';
 import { BIG_BEAM_SECONDS, beamSeconds, durationText, honk, unlockSound } from '../beam';
+import { clockAhead, clockAheadText, daysLeft, showHomeScreenCard } from './warnings';
 
 const get = useApp.getState;
 const set = useApp.setState;
@@ -74,6 +75,8 @@ export async function start(): Promise<void> {
   }
   void store.askToKeep();
   void fillSummaries(docs);
+  void checkSpace();
+  set({ homeCard: showHomeScreenCard() });
   if (last && docs.some((d) => d.docId === last)) await openDoc(last);
   else set({ screen: { kind: 'home' } });
 }
@@ -195,6 +198,7 @@ export async function openDoc(docId: DocId, steal = false): Promise<void> {
     const doc = engine.openDoc(docId, me.actor, stored);
     begin(doc, lock);
     set({ screen: { kind: 'doc' } });
+    warnClock();
   } catch (e) {
     console.error(e);
     lock.release();
@@ -239,6 +243,37 @@ export async function goHome(): Promise<void> {
   releaseSession();
   set({ screen: { kind: 'home' }, sheet: null });
   await loadDocs().catch(() => {});
+  await checkSpace();
+}
+
+/** "Storage almost full": the space left, divided by how fast this phone has been writing. */
+async function checkSpace(): Promise<void> {
+  const me = get().me;
+  const space = await store.space();
+  if (me && space) set({ storageDays: daysLeft(space, me.createdAt, Date.now()) });
+}
+
+const clockWarned = new Set<DocId>();
+
+/** "This phone's clock may be wrong", once per doc each time the app runs. */
+function warnClock(): void {
+  const s = get().session;
+  const me = get().me;
+  if (!s || !me || clockWarned.has(s.docId)) return;
+  const ahead = clockAhead(s.engine.changes(), me.actor, Date.now());
+  if (!ahead) return;
+  clockWarned.add(s.docId);
+  set({
+    sheet: {
+      kind: 'message',
+      message: {
+        warn: true,
+        title: "This phone's clock may be wrong.",
+        body: clockAheadText(ahead),
+        actions: [{ label: 'OK', style: 'main', run: () => set({ sheet: null }) }],
+      },
+    },
+  });
 }
 
 export async function newDoc(template: TemplateInfo): Promise<void> {
@@ -367,6 +402,7 @@ export function openAddRule(): void {
 
 export function backToDoc(): void {
   set({ screen: get().session ? { kind: 'doc' } : { kind: 'home' }, sheet: null });
+  warnClock();
 }
 
 /** Writes the doc's row on the docs home: title, size, writers, truck back words, last change. */
@@ -685,6 +721,7 @@ export function readNew(typeIn: boolean): void {
   if (screen.kind !== 'caught') return;
   refresh({ glow: { changes: screen.result.newEdits, typeIn } });
   set({ screen: { kind: 'doc' } });
+  warnClock();
 }
 
 export function caughtDone(): void {

@@ -6,6 +6,7 @@ import { useLayout, useNow } from './layout';
 import { reloadForUpdate, startOffline } from './offline';
 import { AddRule, BeamScreen, CatchScreen, CaughtScreen, ReplayView, SelfTestView } from './pieces';
 import { useApp } from './state';
+import { homeScreenCardSeen } from './warnings';
 import { ColourScreen } from './screens/ColourScreen';
 import { DocScreen } from './screens/DocScreen';
 import { FirstCatch } from './screens/FirstCatch';
@@ -54,7 +55,8 @@ export function Shell() {
           now={now}
           offline={s.offline}
           notice={s.notice}
-          storageLow={s.storageLow}
+          storageDays={s.storageDays}
+          homeCard={s.homeCard}
           onOpen={(id) => void act.openDoc(id)}
           onNew={(t) => void act.newDoc(t)}
           onMenu={(docId) => useApp.setState({ sheet: { kind: 'row-menu', docId } })}
@@ -62,6 +64,11 @@ export function Shell() {
           onCatch={act.startCatch}
           onOpenFile={act.openFilePicker}
           onSaveBackup={() => void (s.docs[0] && act.saveFileOf(s.docs[0].docId))}
+          onStorageNotNow={() => useApp.setState({ storageDays: null })}
+          onHomeCard={(showHow) => {
+            homeScreenCardSeen();
+            useApp.setState({ homeCard: false, sheet: showHow ? { kind: 'home-screen-how' } : null });
+          }}
         />
       );
       break;

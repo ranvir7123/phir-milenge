@@ -13,6 +13,7 @@ import { MessageScreen } from './screens/MessageScreen';
 import { NoticeBar, UpdateBar } from './screens/Parts';
 import { Sheets } from './screens/Sheets';
 import type { Sheet } from './state';
+import { clockAheadText } from './warnings';
 
 const me: DeviceRecord = { actor: RINA, name: 'Rina', place: 'Gosaba camp', createdAt: 0 };
 const now = Date.now();
@@ -111,6 +112,9 @@ const SCREENS = [
   'home',
   'home: empty',
   'home: storage low',
+  'home: iPhone card',
+  'sheet: add to home screen',
+  'sheet: clock wrong',
   'colour',
   'colour: none free',
   'first-catch',
@@ -145,7 +149,19 @@ export function Playground() {
             ? { kind: 'remove', docId: 'd1', title: docs[0]!.title, onlyHere: 2 }
             : name === 'sheet: saved file'
               ? { kind: 'saved-file', name: 'Camp log - Sundarbans cyclone relief - Rina - Mon 4.30 pm.phir', size: 14_300, bytes: new Uint8Array(14_300) }
-              : null,
+              : name === 'sheet: add to home screen'
+                ? { kind: 'home-screen-how' }
+                : name === 'sheet: clock wrong'
+                  ? {
+                      kind: 'message',
+                      message: {
+                        warn: true,
+                        title: "This phone's clock may be wrong.",
+                        body: clockAheadText(3),
+                        actions: [{ label: 'OK', style: 'main', run() {} }],
+                      },
+                    }
+                  : null,
     );
   };
 
@@ -160,7 +176,8 @@ export function Playground() {
         now={clock}
         offline="ready"
         notice={screen.startsWith('notice') ? { id: 1, text: 'Removed from this phone.', action: { label: 'Undo', run() {} } } : null}
-        storageLow={screen === 'home: storage low'}
+        storageDays={screen === 'home: storage low' ? 2 : null}
+        homeCard={screen === 'home: iPhone card'}
         onOpen={() => {}}
         onNew={() => {}}
         onMenu={() => {}}
@@ -168,6 +185,8 @@ export function Playground() {
         onCatch={() => {}}
         onOpenFile={() => {}}
         onSaveBackup={() => {}}
+        onStorageNotNow={() => {}}
+        onHomeCard={() => {}}
       />
     );
   } else if (screen === 'colour') body = <ColourScreen view={sampleView} me={RINA} onDone={() => {}} />;

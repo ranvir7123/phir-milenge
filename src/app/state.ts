@@ -63,6 +63,7 @@ export type Sheet =
   | { kind: 'row-menu'; docId: DocId }
   | { kind: 'remove'; docId: DocId; title: string; onlyHere: number }
   | { kind: 'saved-file'; name: string; size: number; bytes: Uint8Array }
+  | { kind: 'home-screen-how' }
   | { kind: 'message'; message: Message };
 
 /** A line at the bottom, such as "Removed from this phone. Undo". */
@@ -83,8 +84,10 @@ export interface AppState {
   updateReady: boolean;
   notice: Notice | null;
   bigScreen: boolean;
-  /** Bytes left on this phone, and how fast it has been writing, for "Storage almost full". */
-  storageLow: boolean;
+  /** "Storage almost full": days of writing left at this phone's pace, or null while there's plenty. */
+  storageDays: number | null;
+  /** The iPhone "Keep it on your home screen" card on the docs home. */
+  homeCard: boolean;
 }
 
 export const useApp = create<AppState>(() => ({
@@ -97,5 +100,6 @@ export const useApp = create<AppState>(() => ({
   updateReady: false,
   notice: null,
   bigScreen: false,
-  storageLow: false,
+  storageDays: null,
+  homeCard: false,
 }));

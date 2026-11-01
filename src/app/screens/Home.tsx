@@ -7,6 +7,7 @@ import { nameWithPlace, shortName } from '../../shared/names';
 import { formatTime } from '../../shared/time';
 import { WriterMark } from '../../shared/writer';
 import { lastLine, writersLine } from '../summary';
+import { roomText } from '../warnings';
 import type { Notice, OfflineStatus } from '../state';
 import { NoticeBar, OfflineLine } from './Parts';
 import { TemplateCards } from './TemplateCards';
@@ -18,7 +19,10 @@ export interface HomeProps {
   now: number;
   offline: OfflineStatus;
   notice: Notice | null;
-  storageLow: boolean;
+  /** "Storage almost full": days of writing left, or null. */
+  storageDays: number | null;
+  /** The iPhone "Keep it on your home screen" card. */
+  homeCard: boolean;
   onOpen(docId: DocId): void;
   onNew(t: TemplateInfo): void;
   onMenu(docId: DocId): void;
@@ -26,6 +30,8 @@ export interface HomeProps {
   onCatch(): void;
   onOpenFile(): void;
   onSaveBackup(): void;
+  onStorageNotNow(): void;
+  onHomeCard(showHow: boolean): void;
 }
 
 function Writers({ doc }: { doc: HomeDocRecord }) {
@@ -160,15 +166,37 @@ export function Home(p: HomeProps) {
       </header>
 
       <main className="home-body">
-        {p.storageLow && (
+        {p.storageDays !== null && (
           <div className="home-warn warn-line" role="alert">
             <Warn size={18} />
             <span>
-              This phone has room for about 2 more days of writing. Save a backup file, then free up space.{' '}
-              <button type="button" className="inline-link" onClick={p.onSaveBackup}>
-                Save a file
-              </button>
+              <b>Storage almost full.</b> {roomText(p.storageDays)} Save a backup file, then free up space.
+              <span className="home-warn-links">
+                <button type="button" className="inline-link" onClick={p.onSaveBackup}>
+                  Save a file
+                </button>
+                <button type="button" className="inline-link is-quiet" onClick={p.onStorageNotNow}>
+                  Not now
+                </button>
+              </span>
             </span>
+          </div>
+        )}
+
+        {p.homeCard && (
+          <div className="home-card">
+            <p>
+              <b>Keep it on your home screen.</b> On iPhone, Safari may clear a website's saved docs if you don't open it for about a week. Add
+              Phir Milenge to your home screen so your docs stay.
+            </p>
+            <div className="home-card-buttons">
+              <button type="button" className="ui-btn ui-btn-main" onClick={() => p.onHomeCard(true)}>
+                Show me how
+              </button>
+              <button type="button" className="ui-btn" onClick={() => p.onHomeCard(false)}>
+                Not now
+              </button>
+            </div>
           </div>
         )}
 
