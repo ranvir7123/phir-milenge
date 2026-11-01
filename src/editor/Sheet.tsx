@@ -1,6 +1,7 @@
 // A sheet that slides up from the bottom on a phone, and a small box over the page on a laptop.
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from './icons';
 
 export function Sheet({
@@ -20,15 +21,27 @@ export function Sheet({
   keepFocus?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null);
+  const close = useRef(onClose);
+  useEffect(() => {
+    close.current = onClose;
+  });
+  // A sheet opened from inside the page (a table's row sheet) still covers the whole editor, not the page.
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  const mark = useCallback((el: HTMLElement | null) => {
+    if (el) setHost(el.closest<HTMLElement>('.ed') ?? el.parentElement);
+  }, []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') close.current();
     };
     window.addEventListener('keydown', onKey);
-    if (!keepFocus) box.current?.querySelector<HTMLElement>('input, textarea, select')?.focus();
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, keepFocus]);
-  return (
+  }, []);
+  // Once only: a redraw (the phone keyboard opening, say) must not pull the cursor back to the first box.
+  useEffect(() => {
+    if (host && !keepFocus) box.current?.querySelector<HTMLElement>('input, textarea, select')?.focus();
+  }, [host, keepFocus]);
+  const sheet = (
     <div className={`sh-wrap sh-${layout}`}>
       <div className="sh-back" onClick={onClose} onMouseDown={(e) => keepFocus && e.preventDefault()} />
       <div
@@ -53,5 +66,11 @@ export function Sheet({
         {footer && <div className="sh-foot">{footer}</div>}
       </div>
     </div>
+  );
+  return (
+    <>
+      <span ref={mark} hidden />
+      {host && createPortal(sheet, host)}
+    </>
   );
 }
