@@ -586,19 +586,30 @@ export function Editor(props: EditorProps) {
   };
 
   // While the phone's keyboard is open, the toolbar sits just above it (the app hides its Catch/Beam bar).
+  // `keyboard` is how much of the editor the keyboard covers, or null when it is closed.
   const edRef = useRef<HTMLDivElement | null>(null);
-  const [keyboard, setKeyboard] = useState(0);
+  const [keyboard, setKeyboard] = useState<number | null>(null);
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv || props.layout !== 'phone') {
-      setKeyboard(0);
+      setKeyboard(null);
       return;
     }
+    let tallest = 0;
+    let width = 0;
     const measure = () => {
       const el = edRef.current;
       if (!el) return;
-      const covered = Math.round(el.getBoundingClientRect().bottom - (vv.offsetTop + vv.height));
-      setKeyboard(covered > 80 ? covered : 0);
+      if (window.innerWidth !== width) {
+        // Turned sideways: start again.
+        width = window.innerWidth;
+        tallest = 0;
+      }
+      tallest = Math.max(tallest, vv.height);
+      const covered = Math.max(0, Math.round(el.getBoundingClientRect().bottom - (vv.offsetTop + vv.height)));
+      const typing = document.activeElement?.matches('input, textarea, [contenteditable="true"]') ?? false;
+      // iPhone Safari lays the keyboard over the page; Android (resizes-content) shrinks the page instead.
+      setKeyboard(covered > 80 || (typing && tallest - vv.height > 150) ? covered : null);
     };
     measure();
     vv.addEventListener('resize', measure);
@@ -617,8 +628,8 @@ export function Editor(props: EditorProps) {
     <FindQuery.Provider value={find?.query ?? ''}>
     <div
       ref={edRef}
-      className={`ed ed-${props.layout}${big ? ' ed-big' : ''}${lanes ? '' : ' ed-ns'}${keyboard ? ' ed-kb' : ''}`}
-      style={keyboard ? ({ '--kb': `${keyboard}px` } as CSSProperties) : undefined}
+      className={`ed ed-${props.layout}${big ? ' ed-big' : ''}${lanes ? '' : ' ed-ns'}${keyboard !== null ? ' ed-kb' : ''}`}
+      style={keyboard !== null ? ({ '--kb': `${keyboard}px` } as CSSProperties) : undefined}
     >
       {editor && (
         <Toolbar
