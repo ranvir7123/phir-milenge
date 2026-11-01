@@ -61,12 +61,37 @@ function useKeyboardOpen(): boolean {
   return open;
 }
 
+/**
+ * The paragraph the cursor is in, for "3 of 4 have it" in the side panel. The page marks each paragraph
+ * with its id (data-id). While the cursor is outside the page (tapping the side panel), the last one stays.
+ */
+function useCursorBlock(blocks: readonly { id: ItemId }[]): ItemId | null {
+  const [block, setBlock] = useState<ItemId | null>(null);
+  useEffect(() => {
+    const ids = new Set(blocks.map((b) => b.id));
+    const check = () => {
+      const node = document.getSelection()?.anchorNode ?? null;
+      let el = node instanceof Element ? node : (node?.parentElement ?? null);
+      if (!el?.closest('.doc-page')) return;
+      for (el = el.closest('[data-id]'); el; el = el.parentElement?.closest('[data-id]') ?? null) {
+        const id = el.getAttribute('data-id');
+        if (id && ids.has(id)) return setBlock(id);
+      }
+      setBlock(null);
+    };
+    document.addEventListener('selectionchange', check);
+    return () => document.removeEventListener('selectionchange', check);
+  }, [blocks]);
+  return block;
+}
+
 export function DocScreen({ layout, session, me, bigScreen, notice, onBigScreen }: DocScreenProps) {
   const [local, setLocal] = useState<Local>(null);
   const [request, setRequest] = useState<Request>(null);
   const [focusBlock, setFocusBlock] = useState<ItemId | null>(null);
   const keyboard = useKeyboardOpen();
   const { view, engine } = session;
+  const cursorBlock = useCursorBlock(view.blocks);
   const laptop = layout === 'laptop';
   const title = titleOf(view);
   const count = useMemo(() => caughtUp(engine.changes(), me.actor), [engine, view, me.actor]);
@@ -151,7 +176,7 @@ export function DocScreen({ layout, session, me, bigScreen, notice, onBigScreen 
       setNormalSync={(on) => void act.setNormalSync(on)}
       onJump={jump}
       onOpen={onPanelOpen}
-      cursorBlock={null}
+      cursorBlock={cursorBlock}
     />
   );
 
