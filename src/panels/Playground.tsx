@@ -207,7 +207,7 @@ export function Playground() {
     onOpen: (w: string) => say(`open ${w}`),
     cursorBlock: cursor ? (real ? (view.blocks.find((b) => b.sentences.length > 0)?.id ?? null) : 'blkferry0001') : null,
   };
-  // The full-screen views cover the playground's buttons, so closing one goes back to the panel.
+  // Closing a full-screen view goes back to the panel, as the app goes back to the doc.
   const close = () => {
     say('close');
     setScreen('side-phone');
@@ -267,6 +267,7 @@ export function Playground() {
     case 'replay-empty':
     case 'replay-long':
     case 'replay-error':
+      frame = wide || big ? 'pn-play-fill' : 'pn-play-phone pn-play-fill';
       stage = <ReplayView {...base} onClose={close} />;
       break;
     case 'real-test':
@@ -274,10 +275,12 @@ export function Playground() {
     case 'test-slow':
     case 'test-empty':
     case 'test-error':
+      frame = wide || big ? 'pn-play-fill' : 'pn-play-phone pn-play-fill';
       stage = <SelfTestView {...base} onClose={close} />;
       break;
     case 'real-rule':
     case 'rule-none':
+      frame = wide || big ? 'pn-play-fill' : 'pn-play-phone pn-play-fill';
       stage = <AddRule {...base} onClose={close} />;
       break;
   }
