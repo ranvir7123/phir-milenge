@@ -173,7 +173,7 @@ export const playIntents: Intents = new Proxy({} as Intents, {
     },
 });
 
-/** A made-up self-test that takes a little time per order. `bad` lists the order numbers that come out different. */
+/** A made-up self-test that takes a little time per order. `bad` lists the order numbers (counted across calls, from 0) that come out different. */
 export function playSelfTest(msPerOrder: number, bad: number[] = []) {
   let done = 0;
   return (_changes: readonly Change[], orders: number): SelfTestResult => {
@@ -184,7 +184,8 @@ export function playSelfTest(msPerOrder: number, bad: number[] = []) {
     const differing = [];
     for (let i = 0; i < orders; i++) {
       const run = done + i;
-      if (bad.includes(run)) differing.push({ run, order: [`${RINA}:4`, `${ASIF}:2`, `${TANMOY}:2`, `${MEHER}:5`].sort(() => (run % 2 ? 1 : -1)), fingerprint: { words: ['lotus', 'river', 'kite'] as [string, string, string], digits: '17', hex: `9a${run.toString(16)}3c7e0b5d2f4a6c8e1b3d5f7a9c0e2b4d6f8a1c3e5b7d9f0a2c4e6b8d1f3a5c7` } });
+      // Like the real self-test, run numbers count from the start of this call.
+      if (bad.includes(run)) differing.push({ run: i, order: [`${RINA}:4`, `${ASIF}:2`, `${TANMOY}:2`, `${MEHER}:5`].sort(() => (run % 2 ? 1 : -1)), fingerprint: { words: ['lotus', 'river', 'kite'] as [string, string, string], digits: '17', hex: `9a${run.toString(16)}3c7e0b5d2f4a6c8e1b3d5f7a9c0e2b4d6f8a1c3e5b7d9f0a2c4e6b8d1f3a5c7` } });
     }
     done += orders;
     return { runs: orders, same: orders - differing.length, fingerprint: sampleFingerprint, differing };

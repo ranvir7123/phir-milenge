@@ -142,3 +142,29 @@ export function paintVar(p: Paint): string {
       return 'var(--raised)';
   }
 }
+
+/** The same colours as plain values, for pictures drawn outside the page (an image address can't read CSS variables). */
+const PAINT_HEX: Record<Paint, string> = {
+  yellow: '#F0E442',
+  orange: '#E69F00',
+  pink: '#CC79A7',
+  red: '#D55E00',
+  text: '#E8E4DC',
+  ground: '#292725',
+};
+
+/**
+ * The picture as an image address, so the self-test can show 1,000 small truck backs as cheap
+ * background images instead of 1,000 drawings.
+ */
+export function truckImage(hex: string): string {
+  const parts = truckPattern(hex).map((s) =>
+    s.circle
+      ? `<circle cx="${s.circle.cx}" cy="${s.circle.cy}" r="${s.circle.r}" fill="${PAINT_HEX[s.fill ?? 'ground']}"/>`
+      : s.stroke
+        ? `<path d="${s.d}" fill="none" stroke="${PAINT_HEX[s.stroke]}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`
+        : `<path d="${s.d}" fill="${PAINT_HEX[s.fill ?? 'ground']}"/>`,
+  );
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="${PAINT_HEX.ground}"/>${parts.join('')}</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}

@@ -4,9 +4,15 @@
 import { useMemo, useState } from 'react';
 import type { DocView, Op } from '../contracts';
 import { ASIF, BASE, RINA, TANMOY, sampleView } from '../contracts/fixtures';
+import { buildScenario } from '../demo/scenario';
+import { WRITERS } from '../demo/writers';
+import { engine as model } from '../model';
+import { AddRule } from './AddRule';
 import { CaughtScreen } from './CaughtScreen';
 import { usePlayEngine } from './engineLink';
 import { MEHER, catchResult, playChanges, playEngine, playIntents, playSelfTest, playView } from './playData';
+import { ReplayView } from './ReplayView';
+import { SelfTestView } from './SelfTestView';
 import { SidePanel } from './SidePanel';
 import { TruckBack } from './TruckBack';
 import './panels.css';
@@ -77,7 +83,15 @@ type Screen =
   | 'side-empty'
   | 'side-odd'
   | 'truck-small'
-  | 'truck-large';
+  | 'truck-large'
+  | 'real-side'
+  | 'real-replay'
+  | 'replay-empty'
+  | 'real-test'
+  | 'test-diff'
+  | 'test-slow'
+  | 'real-rule'
+  | 'rule-none';
 
 const SCREENS: { id: Screen; label: string }[] = [
   { id: 'caught-beam', label: 'Caught (beam)' },
@@ -93,13 +107,32 @@ const SCREENS: { id: Screen; label: string }[] = [
   { id: 'side-odd', label: 'Panel, odd cases' },
   { id: 'truck-small', label: 'Truck back (small)' },
   { id: 'truck-large', label: 'Truck back (large)' },
+  { id: 'real-side', label: 'Panel, real engine' },
+  { id: 'real-replay', label: 'Replay, real engine' },
+  { id: 'replay-empty', label: 'Replay, nothing yet' },
+  { id: 'real-test', label: '1,000 orders, real engine' },
+  { id: 'test-diff', label: '1,000 orders, 2 differ' },
+  { id: 'test-slow', label: '1,000 orders, slow laptop' },
+  { id: 'real-rule', label: 'Add a rule, real doc' },
+  { id: 'rule-none', label: 'Add a rule, no tables' },
 ];
+
+/** The demo's whole week of writing, opened by the real engine on Base camp's laptop. Built once, when first asked for. */
+let realDoc: ReturnType<typeof model.openDoc> | null = null;
+function realEngine() {
+  if (!realDoc) {
+    const s = buildScenario(model);
+    realDoc = model.openDoc(s.docId, WRITERS.base.actor, s.everything);
+  }
+  return realDoc;
+}
 
 export function Playground() {
   const [screen, setScreen] = useState<Screen>('caught-beam');
   const [normalSync, setNormalSync] = useState(false);
   const [log, setLog] = useState<string[]>([]);
   const [cursor, setCursor] = useState(true);
+  const [wide, setWide] = useState(false);
   // A new key each time the screen changes, so the lorry drives again and panels start fresh.
   const [runs, setRuns] = useState(0);
 
@@ -107,16 +140,23 @@ export function Playground() {
   const say = (line: string) => setLog((l) => [line, ...l].slice(0, 4));
   const commit = (ops: Op[]) => say(`commit: ${ops.map((o) => (o.o === 'set' ? o.k : o.list)).join(', ')}`);
 
-  const view = screen === 'side-empty' ? emptyView : screen === 'side-odd' || screen === 'caught-long' ? oddView : playView;
+  const real = screen.startsWith('real-');
   const engine = useMemo(
     () =>
-      screen === 'side-empty'
-        ? playEngine({ view, changes: changes.filter((c) => c.actor === BASE && c.kind === 'edit'), holders: [BASE] })
-        : playEngine({ view, changes, onCommit: commit }),
+      real
+        ? realEngine()
+        : screen === 'side-empty' || screen === 'rule-none' || screen === 'replay-empty'
+          ? playEngine({ view: emptyView, changes: changes.filter((c) => c.actor === BASE && c.kind === 'edit').slice(0, 1), holders: [BASE] })
+          : playEngine({ view: screen === 'side-odd' || screen === 'caught-long' ? oddView : playView, changes, onCommit: commit }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [screen, changes],
   );
-  const base = { engine, view, me: BASE, commit, bigScreen: false, layout: 'phone' as const };
+  const view = engine.view();
+  // The test screens pick their self-test: the real engine's, or a made-up one that is slow or finds differences.
+  usePlayEngine(playIntents, screen === 'real-test' ? null : screen === 'test-diff' ? playSelfTest(0.5, [212, 733]) : screen === 'test-slow' ? playSelfTest(40) : playSelfTest(2));
+  const me = real ? WRITERS.base.actor : BASE;
+  const layout = wide ? ('laptop' as const) : ('phone' as const);
+  const base = { engine, view, me, commit, bigScreen: false, layout };
   const cb = {
     onBeamBack: () => say('Beam back'),
     onReadNew: () => say("Read what's new"),
@@ -127,7 +167,13 @@ export function Playground() {
     setNormalSync,
     onJump: (b: string) => say(`jump to ${b}`),
     onOpen: (w: string) => say(`open ${w}`),
-    cursorBlock: cursor ? 'blkferry0001' : null,
+    cursorBlock: cursor ? (real ? (view.blocks.find((b) => b.sentences.length > 0)?.id ?? null) : 'blkferry0001') : null,
+  };
+  // The full-screen views cover the playground's buttons, so closing one goes back to the panel.
+  const close = () => {
+    say('close');
+    setScreen('side-phone');
+    setRuns((r) => r + 1);
   };
 
   let stage: React.ReactNode;
@@ -175,6 +221,23 @@ export function Playground() {
       frame = '';
       stage = <TruckBack view={view} engine={engine} size="large" />;
       break;
+    case 'real-side':
+      if (wide) frame = 'pn-play-laptop';
+      stage = <SidePanel {...base} {...side} />;
+      break;
+    case 'real-replay':
+    case 'replay-empty':
+      stage = <ReplayView {...base} onClose={close} />;
+      break;
+    case 'real-test':
+    case 'test-diff':
+    case 'test-slow':
+      stage = <SelfTestView {...base} onClose={close} />;
+      break;
+    case 'real-rule':
+    case 'rule-none':
+      stage = <AddRule {...base} onClose={close} />;
+      break;
   }
 
   return (
@@ -196,6 +259,9 @@ export function Playground() {
         ))}
         <button type="button" className="pn-btn" aria-pressed={cursor} onClick={() => setCursor((c) => !c)}>
           Cursor in a paragraph
+        </button>
+        <button type="button" className="pn-btn" aria-pressed={wide} onClick={() => setWide((w) => !w)}>
+          Laptop layout
         </button>
         {log.length > 0 && <span className="pn-tiny" style={{ whiteSpace: 'nowrap' }}>{log[0]}</span>}
       </nav>

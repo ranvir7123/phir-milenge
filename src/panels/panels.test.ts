@@ -4,7 +4,7 @@ import { summarise } from './catchSummary';
 import { agoForm, clockForm, cutName, quoteStart } from './format';
 import { caughtUp, missingCount, writerRows } from './knowledge';
 import { ruleName } from './rules';
-import { truckPattern } from './truckPattern';
+import { truckImage, truckPattern } from './truckPattern';
 import { MEHER, catchResult, playChanges, playEngine, playView } from './playData';
 
 // Times are made in this computer's own time zone, the same way the screens read them.
@@ -55,6 +55,11 @@ describe('the truck back picture', () => {
   it('repaints when the hash changes', () => {
     const other = `${hex.slice(0, 8)}ff${hex.slice(10)}`;
     expect(truckPattern(other)).not.toEqual(truckPattern(hex));
+  });
+
+  it('makes the same small image for the self-test grid from the same hash', () => {
+    expect(truckImage(hex)).toBe(truckImage(hex));
+    expect(truckImage(hex)).toMatch(/^url\("data:image\/svg\+xml,/);
   });
 
   it('only uses the writer colours, the text colour and the panel colour', () => {
