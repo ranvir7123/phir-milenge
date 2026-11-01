@@ -10,7 +10,7 @@ if (process.argv[2] === 'measure') {
   const built = Date.now();
   const m = measure(total);
   const f = (n: number) => `${Math.round(n)} ms`;
-  console.log(`Phir Milenge: a doc of ${m.changes} changes (${m.edits} edits, the rest notes), from 4 phones`);
+  console.log(`Relay Docs: a doc of ${m.changes} changes (${m.edits} edits, the rest notes), from 4 phones`);
   console.log(`(made in ${((Date.now() - built) / 1000).toFixed(1)} seconds, measuring included)`);
   console.log('');
   m.rounds.forEach((r, i) =>
@@ -28,7 +28,7 @@ const orders = Number(process.argv[2] ?? 1000);
 const started = Date.now();
 const result = runTwoVersionsScript(orders);
 
-console.log('Phir Milenge: the two-versions script test');
+console.log('Relay Docs: the two-versions script test');
 console.log('');
 result.steps.forEach((s, i) => {
   console.log(`${i + 1}. ${s.title}: ${s.passed ? 'passed' : 'FAILED'}`);
