@@ -9,12 +9,16 @@ function subscribe(onChange: () => void): () => void {
   return () => mq.removeEventListener('change', onChange);
 }
 
+/**
+ * The layout, which is also this device's word on screen: "Saved on this laptop", "Docs on this laptop".
+ * For words made outside a screen (messages, the line at the bottom); screens use useLayout.
+ */
+export function layoutNow(): 'phone' | 'laptop' {
+  return matchMedia(QUERY).matches ? 'laptop' : 'phone';
+}
+
 export function useLayout(): 'phone' | 'laptop' {
-  return useSyncExternalStore(
-    subscribe,
-    () => (matchMedia(QUERY).matches ? 'laptop' : 'phone'),
-    () => 'phone',
-  );
+  return useSyncExternalStore(subscribe, layoutNow, () => 'phone');
 }
 
 /** A clock that ticks once a minute, for "2 min ago". */

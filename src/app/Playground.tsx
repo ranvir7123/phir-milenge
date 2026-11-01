@@ -156,8 +156,8 @@ export function Playground() {
                       kind: 'message',
                       message: {
                         warn: true,
-                        title: "This phone's clock may be wrong.",
-                        body: clockAheadText(3),
+                        title: `This ${layout}'s clock may be wrong.`,
+                        body: clockAheadText(3, layout),
                         actions: [{ label: 'OK', style: 'main', run() {} }],
                       },
                     }
@@ -175,7 +175,7 @@ export function Playground() {
         docs={screen === 'home: empty' ? [] : docs}
         now={clock}
         offline="ready"
-        notice={screen.startsWith('notice') ? { id: 1, text: 'Removed from this phone.', action: { label: 'Undo', run() {} } } : null}
+        notice={screen.startsWith('notice') ? { id: 1, text: `Removed from this ${layout}.`, action: { label: 'Undo', run() {} } } : null}
         storageDays={screen === 'home: storage low' ? 2 : null}
         homeCard={screen === 'home: iPhone card'}
         onOpen={() => {}}
@@ -210,6 +210,7 @@ export function Playground() {
       <Sheets
         sheet={sheet}
         me={me}
+        layout={layout}
         titleOf={() => docs[0]!.title}
         onClose={() => setSheet(null)}
         onNew={() => setSheet(null)}

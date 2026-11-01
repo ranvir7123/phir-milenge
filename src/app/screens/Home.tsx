@@ -170,7 +170,7 @@ export function Home(p: HomeProps) {
           <div className="home-warn warn-line" role="alert">
             <Warn size={18} />
             <span>
-              <b>Storage almost full.</b> {roomText(p.storageDays)} Save a backup file, then free up space.
+              <b>Storage almost full.</b> {roomText(p.storageDays, p.layout)} Save a backup file, then free up space.
               <span className="home-warn-links">
                 <button type="button" className="inline-link" onClick={p.onSaveBackup}>
                   Save a file
@@ -209,7 +209,7 @@ export function Home(p: HomeProps) {
 
         <section aria-labelledby="home-docs">
           <h2 id="home-docs" className="home-h2">
-            Docs on this phone
+            Docs on this {p.layout}
           </h2>
           {p.docs.length > 8 && (
             <label className="home-search">
@@ -219,7 +219,7 @@ export function Home(p: HomeProps) {
             </label>
           )}
           {p.docs.length === 0 ? (
-            <p className="quiet home-empty">No docs on this phone. Start a new one, or catch one from a friend.</p>
+            <p className="quiet home-empty">No docs on this {p.layout}. Start a new one, or catch one from a friend.</p>
           ) : laptop ? (
             <LaptopTable docs={docs} now={p.now} onOpen={p.onOpen} onMenu={p.onMenu} />
           ) : (

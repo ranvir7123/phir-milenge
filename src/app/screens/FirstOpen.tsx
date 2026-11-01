@@ -70,7 +70,7 @@ export function FirstOpen({ offline, onGo }: FirstOpenProps) {
             className="field"
             value={place}
             maxLength={NAME_MAX}
-            placeholder="For example, Room 12 or Gosaba camp"
+            placeholder="For example, Room 12 or Science lab"
             enterKeyHint="done"
             onChange={(e) => setPlace(e.target.value)}
           />

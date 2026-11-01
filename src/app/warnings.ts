@@ -17,9 +17,10 @@ export function daysLeft(space: { used: number; available: number }, since: numb
   return days <= 7 ? days : null;
 }
 
-export function roomText(days: number): string {
-  if (days < 1) return 'This phone has room for less than a day of writing.';
-  return `This phone has room for about ${days} more ${days === 1 ? 'day' : 'days'} of writing.`;
+/** `device` is the word for this device: "phone", or "laptop" on Base camp. */
+export function roomText(days: number, device: 'phone' | 'laptop'): string {
+  if (days < 1) return `This ${device} has room for less than a day of writing.`;
+  return `This ${device} has room for about ${days} more ${days === 1 ? 'day' : 'days'} of writing.`;
 }
 
 /**
@@ -34,8 +35,8 @@ export function clockAhead(changes: readonly Change[], me: ActorId, now: number)
   return ahead * 2 > newest.size ? ahead : 0;
 }
 
-export function clockAheadText(ahead: number): string {
-  return `Times from ${ahead} other ${ahead === 1 ? 'phone are' : 'phones are'} later than this phone's clock. Check the date and time in this phone's settings.`;
+export function clockAheadText(ahead: number, device: 'phone' | 'laptop'): string {
+  return `Times from ${ahead} other ${ahead === 1 ? 'phone are' : 'phones are'} later than this ${device}'s clock. Check the date and time in this ${device}'s settings.`;
 }
 
 const HOME_CARD = 'phir-home-card-seen';

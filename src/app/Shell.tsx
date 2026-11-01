@@ -195,6 +195,7 @@ export function Shell() {
       <Sheets
         sheet={s.sheet}
         me={me}
+        layout={layout}
         titleOf={(docId) => s.docs.find((d) => d.docId === docId)?.title ?? ''}
         onClose={close}
         onNew={(t) => void act.newDoc(t)}

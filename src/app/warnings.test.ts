@@ -27,9 +27,13 @@ describe('daysLeft', () => {
 
 describe('roomText', () => {
   test('the approved words, with the days worked out', () => {
-    expect(roomText(2)).toBe('This phone has room for about 2 more days of writing.');
-    expect(roomText(1)).toBe('This phone has room for about 1 more day of writing.');
-    expect(roomText(0)).toBe('This phone has room for less than a day of writing.');
+    expect(roomText(2, 'phone')).toBe('This phone has room for about 2 more days of writing.');
+    expect(roomText(1, 'phone')).toBe('This phone has room for about 1 more day of writing.');
+    expect(roomText(0, 'phone')).toBe('This phone has room for less than a day of writing.');
+  });
+
+  test('a laptop says laptop', () => {
+    expect(roomText(2, 'laptop')).toBe('This laptop has room for about 2 more days of writing.');
   });
 });
 
@@ -43,8 +47,11 @@ describe('clockAhead', () => {
   test('more than half of the other phones ahead of this clock', () => {
     const changes = [c('me', NOW + DAY), c('a', NOW + DAY), c('b', NOW + DAY), c('c', NOW - DAY)];
     expect(clockAhead(changes, 'me', NOW)).toBe(2);
-    expect(clockAheadText(2)).toBe(
+    expect(clockAheadText(2, 'phone')).toBe(
       "Times from 2 other phones are later than this phone's clock. Check the date and time in this phone's settings.",
+    );
+    expect(clockAheadText(2, 'laptop')).toBe(
+      "Times from 2 other phones are later than this laptop's clock. Check the date and time in this laptop's settings.",
     );
   });
 
@@ -58,6 +65,6 @@ describe('clockAhead', () => {
 
   test("a writer's newest time decides", () => {
     expect(clockAhead([c('a', NOW - DAY), c('a', NOW + DAY)], 'me', NOW)).toBe(1);
-    expect(clockAheadText(1)).toBe("Times from 1 other phone are later than this phone's clock. Check the date and time in this phone's settings.");
+    expect(clockAheadText(1, 'phone')).toBe("Times from 1 other phone are later than this phone's clock. Check the date and time in this phone's settings.");
   });
 });

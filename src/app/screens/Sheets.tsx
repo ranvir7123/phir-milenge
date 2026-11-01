@@ -12,6 +12,8 @@ import { TemplateCards } from './TemplateCards';
 export interface SheetsProps {
   sheet: SheetState | null;
   me: DeviceRecord | null;
+  /** Also this device's word: "Remove from this laptop". */
+  layout: 'phone' | 'laptop';
   titleOf(docId: string): string;
   onClose(): void;
   onNew(t: TemplateInfo): void;
@@ -50,7 +52,7 @@ function MeSheet({ me, onSave, onClose }: { me: DeviceRecord; onSave(name: strin
             className="field"
             value={place}
             maxLength={NAME_MAX}
-            placeholder="For example, Room 12 or Gosaba camp"
+            placeholder="For example, Room 12 or Science lab"
             onChange={(e) => setPlace(e.target.value)}
           />
         </div>
@@ -98,7 +100,7 @@ export function Sheets(p: SheetsProps) {
             </button>
             <button type="button" className="menu-item" onClick={() => p.onAskRemove(sheet.docId)}>
               <Icon name="trash" />
-              Remove from this phone
+              Remove from this {p.layout}
             </button>
           </div>
           <button type="button" className="ui-btn ui-btn-tall" onClick={p.onClose}>
@@ -109,15 +111,15 @@ export function Sheets(p: SheetsProps) {
 
     case 'remove':
       return (
-        <Sheet label="Remove from this phone" onClose={p.onClose}>
+        <Sheet label={`Remove from this ${p.layout}`} onClose={p.onClose}>
           <p>
-            <b>Remove '{sheet.title}' from this phone?</b> Phones that already have it keep it. To get it back, catch it from one of them.
+            <b>Remove '{sheet.title}' from this {p.layout}?</b> Phones that already have it keep it. To get it back, catch it from one of them.
           </p>
           {sheet.onlyHere > 0 && (
             <p className="warn-line">
               <Warn size={18} />
               <span>
-                {yourChanges(sheet.onlyHere)} only on this phone. Removing the doc loses {sheet.onlyHere === 1 ? 'it' : 'them'}.
+                {yourChanges(sheet.onlyHere)} only on this {p.layout}. Removing the doc loses {sheet.onlyHere === 1 ? 'it' : 'them'}.
               </span>
             </p>
           )}

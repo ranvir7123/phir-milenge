@@ -1,6 +1,7 @@
 // Every full-screen message: errors, "That's a different doc", the other tab, and so on.
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Icon } from '../../shared/icons';
+import { layoutNow } from '../layout';
 import type { Message } from '../state';
 import { ActionButton, MessageText } from './Parts';
 
@@ -44,7 +45,7 @@ export class Crash extends Component<{ children: ReactNode }, { failed: boolean 
         message={{
           warn: true,
           title: 'Phir Milenge stopped.',
-          body: 'Your doc is saved on this phone up to your last change. Reload to carry on.',
+          body: `Your doc is saved on this ${layoutNow()} up to your last change. Reload to carry on.`,
           actions: [{ label: 'Reload', style: 'main', run: () => location.reload() }],
         }}
       />

@@ -9,6 +9,7 @@ import { onlyOnThisPhone } from './caughtUp';
 import { downloadFile, phirFileName, pickFiles, readFile, shareFile } from './files';
 import { BIG_BEAM_SECONDS, beamSeconds, durationText, honk, unlockSound } from '../beam';
 import { clockAhead, clockAheadText, daysLeft, showHomeScreenCard } from './warnings';
+import { layoutNow } from './layout';
 
 const get = useApp.getState;
 const set = useApp.setState;
@@ -31,7 +32,7 @@ export function stoppedMessage(): Message {
   return {
     warn: true,
     title: 'Phir Milenge stopped.',
-    body: 'Your doc is saved on this phone up to your last change. Reload to carry on.',
+    body: `Your doc is saved on this ${layoutNow()} up to your last change. Reload to carry on.`,
     actions: [{ label: 'Reload', style: 'main', run: () => location.reload() }],
   };
 }
@@ -212,7 +213,7 @@ function damagedMessage(docId: DocId, changes: Change[]): Message {
     warn: true,
     back: true,
     title: "This doc can't be opened.",
-    body: 'The copy saved on this phone is damaged. Catch it again from anyone who has it, or open a backup file.',
+    body: `The copy saved on this ${layoutNow()} is damaged. Catch it again from anyone who has it, or open a backup file.`,
     actions: [
       { label: 'Catch', style: 'main', run: () => startCatch() },
       { label: 'Open a file', run: () => openFilePicker() },
@@ -268,8 +269,8 @@ function warnClock(): void {
       kind: 'message',
       message: {
         warn: true,
-        title: "This phone's clock may be wrong.",
-        body: clockAheadText(ahead),
+        title: `This ${layoutNow()}'s clock may be wrong.`,
+        body: clockAheadText(ahead, layoutNow()),
         actions: [{ label: 'OK', style: 'main', run: () => set({ sheet: null }) }],
       },
     },
@@ -645,7 +646,7 @@ async function takeIn(items: Incoming[], from: { actor: string | null; via: 'bea
       show({
         warn: false,
         title: "That's a different doc.",
-        body: `You ${opened} "${main.title}". Nothing in your doc was changed.${from.via === 'beam' ? " It's saved in Docs on this phone." : ''}`,
+        body: `You ${opened} "${main.title}". Nothing in your doc was changed.${from.via === 'beam' ? ` It's saved in Docs on this ${layoutNow()}.` : ''}`,
         actions: [
           { label: 'Open it as a second doc', style: 'main', run: () => void openDoc(main.docId) },
           { label: 'Back to my doc', run: backToDocOrHome },
@@ -767,7 +768,7 @@ export async function removeDoc(docId: DocId): Promise<void> {
     if ((await store.getLastDoc()) === docId) await store.setLastDoc(null);
     set({ sheet: null });
     await loadDocs();
-    showNotice('Removed from this phone.', {
+    showNotice(`Removed from this ${layoutNow()}.`, {
       label: 'Undo',
       run: () => {
         set({ notice: null });
