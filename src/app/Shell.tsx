@@ -108,11 +108,16 @@ export function Shell() {
       body = <MessageScreen message={screen.message} onBack={() => void act.goHome()} />;
       break;
     case 'catch':
-      body = <CatchScreen onCaught={(payload, hello) => void act.onCaught(payload, hello)} onHello={act.onHello} onCancel={act.stopBeamOrCatch} onUseFile={act.openFilePicker} />;
+      body = (
+        <div className="piece-screen">
+          <CatchScreen onCaught={(payload, hello) => void act.onCaught(payload, hello)} onHello={act.onHello} onCancel={act.stopBeamOrCatch} onUseFile={act.openFilePicker} />
+        </div>
+      );
       break;
     case 'beam':
       body = (
-        <BeamScreen
+        <div className="piece-screen">
+          <BeamScreen
           payload={screen.payload}
           hello={screen.hello}
           broadcast={screen.broadcast}
@@ -120,19 +125,22 @@ export function Shell() {
           onStop={act.stopBeamOrCatch}
           onCatchTheirs={screen.broadcast ? undefined : act.startCatch}
           onSaveFile={act.saveFile}
-        />
+          />
+        </div>
       );
       break;
     case 'caught':
       body = docProps && (
-        <CaughtScreen
-          {...docProps}
-          result={screen.result}
-          fromName={screen.fromName}
-          onBeamBack={() => act.startBeam()}
-          onReadNew={() => act.readNew(layout === 'phone')}
-          onDone={act.caughtDone}
-        />
+        <div className="piece-screen">
+          <CaughtScreen
+            {...docProps}
+            result={screen.result}
+            fromName={screen.fromName}
+            onBeamBack={() => act.startBeam()}
+            onReadNew={() => act.readNew(layout === 'phone')}
+            onDone={act.caughtDone}
+          />
+        </div>
       );
       break;
     case 'first-catch':
@@ -150,10 +158,18 @@ export function Shell() {
       );
       break;
     case 'replay':
-      body = docProps && <ReplayView {...docProps} onClose={act.backToDoc} />;
+      body = docProps && (
+        <div className="piece-screen">
+          <ReplayView {...docProps} onClose={act.backToDoc} />
+        </div>
+      );
       break;
     case 'self-test':
-      body = docProps && <SelfTestView {...docProps} onClose={act.backToDoc} />;
+      body = docProps && (
+        <div className="piece-screen">
+          <SelfTestView {...docProps} onClose={act.backToDoc} />
+        </div>
+      );
       break;
   }
 

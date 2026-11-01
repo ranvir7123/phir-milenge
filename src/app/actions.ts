@@ -7,16 +7,13 @@ import { holdDocLock } from './locks';
 import { makeSummary, titleOf } from './summary';
 import { onlyOnThisPhone } from './caughtUp';
 import { downloadFile, phirFileName, pickFiles, readFile, shareFile } from './files';
+import { BIG_BEAM_SECONDS, beamSeconds, durationText, honk, unlockSound } from '../beam';
 
 const get = useApp.getState;
 const set = useApp.setState;
 
 /** The newest .phir format this version reads. */
 export const PHIR_FORMAT = 1;
-/** Beam speed until the beam test measures it on our phones: 400-byte pieces, 8 codes a second, minus repeats. */
-const BEAM_BYTES_PER_SECOND = 2500;
-/** Over this, the Beam screen first says "This doc is big for beaming." */
-const BEAM_LIMIT_SECONDS = 60;
 
 // ---------------------------------------------------------------------------
 // Messages with fixed wording (2-user-experience.md, "Every error and edge state")
@@ -454,6 +451,7 @@ export async function shareSaved(bytes: Uint8Array, name: string): Promise<void>
 }
 
 export function openFilePicker(): void {
+  unlockSound();
   pickFiles((files) => void openFiles(files));
 }
 
@@ -470,7 +468,9 @@ async function openFiles(files: File[]): Promise<void> {
     if (!r.ok) return fileProblem(r.reason);
     decoded.push(r);
   }
-  if (decoded.length) await takeIn(decoded, { actor: null, via: 'file' }, null, files.length);
+  if (!decoded.length) return;
+  honk();
+  await takeIn(decoded, { actor: null, via: 'file' }, null, files.length);
 }
 
 function safeDecode(bytes: Uint8Array): ReturnType<typeof engine.decodePhir> {
@@ -510,14 +510,13 @@ export function startBeam(broadcast = false, anyway = false): void {
   if (!s || !me) return;
   const title = titleOf(s.view);
   const payload = engine.encodePhir({ docId: s.docId, title, changes: s.engine.changes() });
-  const estimate = Math.max(3, Math.round(payload.length / BEAM_BYTES_PER_SECOND));
+  const estimate = beamSeconds(payload.length);
   const hello: BeamHello = { format: PHIR_FORMAT, docId: s.docId, title, senderName: me.name, senderActor: me.actor, size: payload.length };
-  if (estimate > BEAM_LIMIT_SECONDS && !anyway) {
-    const minutes = Math.round(estimate / 60);
+  if (estimate > BIG_BEAM_SECONDS && !anyway) {
     show({
       warn: false,
       title: 'This doc is big for beaming.',
-      body: `It takes about ${minutes <= 1 ? '1 minute' : `${minutes} minutes`} to beam. Saving a file and sending it by Quick Share, AirDrop or a cable is faster.`,
+      body: `It takes about ${durationText(estimate)} to beam. Saving a file and sending it by Quick Share, AirDrop or a cable is faster.`,
       actions: [
         { label: 'Beam anyway', style: 'beam', run: () => startBeam(broadcast, true) },
         { label: 'Save a file', run: () => (backToDocOrHome(), saveFile()) },
@@ -529,6 +528,7 @@ export function startBeam(broadcast = false, anyway = false): void {
 }
 
 export function startCatch(): void {
+  unlockSound();
   set({ screen: { kind: 'catch', from: get().session ? 'doc' : 'home' }, sheet: null });
 }
 

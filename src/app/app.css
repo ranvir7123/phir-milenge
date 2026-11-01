@@ -536,16 +536,7 @@
 .first-catch-truck {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 16px;
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
-  background: var(--sheet);
-}
-.first-catch-words b {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 22px;
+  gap: 8px;
 }
 
 .message-screen {
@@ -806,6 +797,12 @@
     font-size: 15px;
     white-space: nowrap;
   }
+}
+
+/* Beam, Catch, Caught, replay and the 1,000-order test fill the screen; their own parts fill this box. */
+.piece-screen {
+  height: 100dvh;
+  overflow: auto;
 }
 
 /* ?play=app only: the screen picker floats at the bottom right. */

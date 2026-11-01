@@ -16,8 +16,6 @@ export interface FirstCatchProps {
 }
 
 export function FirstCatch(p: FirstCatchProps) {
-  const fp = p.engine.fingerprint();
-  const words = fp.words.map((w) => w[0]!.toUpperCase() + w.slice(1)).join(' ');
   const template = p.view.template && p.view.template !== 'blank' ? templateById(p.view.template) : undefined;
   const from =
     p.via === 'beam' ? (p.fromName ? `caught from ${p.fromName}` : 'caught') : p.fromName ? `opened from ${p.fromName}'s file` : 'opened from a file';
@@ -30,11 +28,8 @@ export function FirstCatch(p: FirstCatchProps) {
         '{titleOf(p.view)}', {from}. {people} written in it.{template ? ` Made from the ${template.name} template.` : ''}
       </p>
       <div className="first-catch-truck">
-        <p className="first-catch-words">
-          Your doc now: <b>{words}</b>
-        </p>
+        <p className="quiet">Your doc now</p>
         <TruckBack view={p.view} engine={p.engine} size="small" />
-        <p className="quiet">Same words on another phone means the same doc.</p>
       </div>
       {p.colourFree ? (
         <>
