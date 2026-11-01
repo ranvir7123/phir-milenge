@@ -1,0 +1,220 @@
+/* Shared pieces in the Ledger look. Colours only from tokens.css. Any track may use these classes. */
+
+.pm-icon {
+  flex: none;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.quiet {
+  color: var(--quiet);
+}
+
+/* Buttons: blue only on a button that starts a beam; main = filled in the text colour; others outlined. */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.ui-btn:hover {
+  background: var(--raised);
+}
+.ui-btn:focus-visible,
+.link-btn:focus-visible,
+.field:focus-visible {
+  outline: 2px solid var(--beam);
+  outline-offset: 2px;
+}
+.ui-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.ui-btn-main {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--page);
+}
+.ui-btn-main:hover {
+  background: var(--text);
+  opacity: 0.92;
+}
+.ui-btn-beam {
+  background: var(--beam);
+  border-color: var(--beam);
+  color: var(--on-beam);
+}
+.ui-btn-beam:hover {
+  background: var(--beam);
+  opacity: 0.92;
+}
+/* Bottom bars and sheets. */
+.ui-btn-tall {
+  min-height: 48px;
+  font-size: 16px;
+}
+.ui-btn-wide {
+  width: 100%;
+}
+
+/* Quiet text links, such as "or open a file". */
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  color: var(--quiet);
+  font-size: 15px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* Text boxes. 17px keeps iPhone Safari from zooming in on focus. */
+.field-label {
+  display: block;
+  font-size: 14px;
+  color: var(--quiet);
+  margin-bottom: 4px;
+}
+.field {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  background: var(--sheet);
+  color: var(--text);
+  font-size: 17px;
+}
+.field::placeholder {
+  color: var(--quiet);
+  opacity: 0.7;
+}
+.field:focus {
+  border-color: var(--text);
+  outline: none;
+}
+
+/* A warning: the triangle in the warning colour, always followed by its word. */
+.warn-line {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.45;
+}
+.warn-line b,
+.warn-word {
+  color: var(--warning);
+  font-weight: 700;
+}
+
+/* Bottom sheets on phones; a centred box on wider screens. */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.55);
+}
+.sheet {
+  width: 100%;
+  max-width: 560px;
+  max-height: 88dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--sheet);
+  border-top: 1px solid var(--hairline);
+  border-radius: 14px 14px 0 0;
+  padding: 10px 16px calc(16px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sheet-grab {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--hairline);
+  align-self: center;
+  flex: none;
+}
+.sheet h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.25;
+  margin: 0;
+}
+.sheet p {
+  margin: 0;
+}
+@media (min-width: 900px) {
+  .sheet-backdrop {
+    align-items: center;
+  }
+  .sheet {
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    padding: 20px 24px 24px;
+  }
+  .sheet-grab {
+    display: none;
+  }
+}
+
+/* One line, cut with "…". */
+.one-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* The writer's colour: always a thin 3px bar next to a name; Plain writers get a ring. */
+.writer-bar {
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  border-radius: 1px;
+  flex: none;
+}
+.writer-ring {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text);
+  flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -4,6 +4,7 @@ import { Playground as BeamPlayground } from '../beam/Playground';
 import { Playground as EditorPlayground } from '../editor/Playground';
 import { Playground as PanelsPlayground } from '../panels/Playground';
 import { Playground as DemoPlayground } from '../demo/Playground';
+import { Playground as AppPlayground } from './Playground';
 
 export const playgrounds = {
   engine: EnginePlayground,
@@ -11,4 +12,5 @@ export const playgrounds = {
   editor: EditorPlayground,
   panels: PanelsPlayground,
   demo: DemoPlayground,
+  app: AppPlayground,
 };
