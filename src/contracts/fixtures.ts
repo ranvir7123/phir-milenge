@@ -121,7 +121,7 @@ export const sampleView: DocView = {
   rules: [
     {
       id: 'rule00000001',
-      field: one('rule/rule00000001', { kind: 'unique', table: 'blkkits00001', column: 'colcard00001' }),
+      field: one('rule/rule00000001', { kind: 'unique', name: 'One kit per ration card', table: 'blkkits00001', column: 'colcard00001' }),
       result: {
         state: 'broken',
         message: 'One kit per ration card. Ration card 4471 has Family kit 2 times.',
@@ -133,7 +133,7 @@ export const sampleView: DocView = {
     },
     {
       id: 'rule00000002',
-      field: one('rule/rule00000002', { kind: 'limit', table: 'blkkits00001', where: { column: 'colkit000001', equals: 'Tarpaulin' }, max: 500 }),
+      field: one('rule/rule00000002', { kind: 'limit', name: 'Tarpaulins stay within 500', table: 'blkkits00001', where: { column: 'colkit000001', equals: 'Tarpaulin' }, max: 500 }),
       result: { state: 'ok' },
     },
   ],

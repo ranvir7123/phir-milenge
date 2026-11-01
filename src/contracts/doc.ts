@@ -188,9 +188,12 @@ export interface BlockView {
 }
 
 export type RuleDef =
-  | { kind: 'unique'; table: ItemId; column: ItemId }
+  /** name: the rule's short name ("One kit per ration card"), used in every message and the Rules panel. */
+  | { kind: 'unique'; table: ItemId; column: ItemId; name?: string }
   | {
       kind: 'limit';
+      /** The rule's short name ("Tarpaulins stay within 500"). */
+      name?: string;
       table: ItemId;
       where?: { column: ItemId; equals: string };
       /** A Number column to total. Absent: count rows. */
