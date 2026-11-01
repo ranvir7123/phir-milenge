@@ -19,7 +19,7 @@ const HINT_AFTER = 3000;
 const STUCK_AFTER = 15000;
 /** How long "That code isn't a doc…" stays after the camera last saw a code that isn't ours. */
 const FOREIGN_SHOWS = 3000;
-/** Set once this device has shown "Phir Milenge needs the camera to catch." */
+/** Set once this device has shown "Relay Docs needs the camera to catch." */
 const ASKED_KEY = 'phir-camera-asked';
 
 type Phase =
@@ -148,7 +148,7 @@ export function CatchScreen({ onCaught, onHello, onCancel, onUseFile, feed }: Ca
   let notice: ReactNode = null;
   if (phase === 'intro') {
     notice = (
-      <Notice title="Phir Milenge needs the camera to catch." body="The camera only reads the code on the other screen. Nothing is recorded or sent anywhere.">
+      <Notice title="Relay Docs needs the camera to catch." body="The camera only reads the code on the other screen. Nothing is recorded or sent anywhere.">
         <button type="button" className="bm-btn bm-btn-solid" onClick={allowCamera}>
           Allow camera
         </button>
@@ -161,7 +161,7 @@ export function CatchScreen({ onCaught, onHello, onCancel, onUseFile, feed }: Ca
     notice = (
       <Notice
         warning
-        title="Their phone has a newer Phir Milenge."
+        title="Their phone has a newer Relay Docs."
         body="Their beam uses things this version can't read yet. Nothing in your doc was changed. They can still catch from you. Once you have internet, open the link to get the newer version, then catch again."
       >
         <button type="button" className="bm-btn bm-btn-solid" onClick={onCancel}>

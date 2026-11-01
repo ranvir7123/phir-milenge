@@ -12,14 +12,14 @@ export const cameraWords: Record<CameraProblem, { title: string; body: string; w
   blocked: {
     title: 'Camera is blocked.',
     body: isIPhone()
-      ? 'To catch, Phir Milenge needs the camera. Tap aA left of the web address, then Website Settings, then Camera, then Allow.'
-      : 'To catch, Phir Milenge needs the camera. Tap the icon left of the web address, then Camera, then Allow.',
+      ? 'To catch, Relay Docs needs the camera. Tap aA left of the web address, then Website Settings, then Camera, then Allow.'
+      : 'To catch, Relay Docs needs the camera. Tap the icon left of the web address, then Camera, then Allow.',
     warning: true,
     retry: true,
   },
   none: {
     title: 'No camera found.',
-    body: 'This device has no camera Phir Milenge can use. Open a file instead, or beam from this device to a phone.',
+    body: 'This device has no camera Relay Docs can use. Open a file instead, or beam from this device to a phone.',
     warning: true,
     retry: false,
   },
