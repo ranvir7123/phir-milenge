@@ -47,7 +47,9 @@ function settleBanner(rule: SettleRule, count: number, numbers: number, nameFor:
 }
 
 export function SidePanel(props: SidePanelProps) {
-  const { engine, view, me, commit, bigScreen, normalSync, setNormalSync, onJump, onOpen, cursorBlock } = props;
+  const { engine, view, me, commit, bigScreen, layout, normalSync, setNormalSync, onJump, onOpen, cursorBlock } = props;
+  // The normal-sync switch and the 1,000-order test are laptop only (2-user-experience.md). Phones don't show them.
+  const laptop = layout === 'laptop' || bigScreen;
   const [page, setPage] = useState<'main' | 'settle'>('main');
   const [banner, setBanner] = useState<string | null>(null);
   const nameFor = (a: ActorId) => cutName(nameOf(view, a));
@@ -230,18 +232,20 @@ export function SidePanel(props: SidePanelProps) {
         )}
       </section>
 
-      <section className="pn-section" aria-labelledby="pn-normal">
-        <div className="pn-switch-row">
-          <h3 id="pn-normal" style={{ fontWeight: 600 }}>
-            What a normal sync would keep
-          </h3>
-          <button type="button" role="switch" aria-checked={normalSync} aria-labelledby="pn-normal" className="pn-switch" onClick={() => setNormalSync(!normalSync)} />
-        </div>
-        {normalSync && <p className="pn-small">Showing what a normal sync would keep: whichever change arrived last. Your doc is unchanged.</p>}
-        <div className="pn-normal">
-          A normal sync would say: <b>Synced. No conflicts.</b>
-        </div>
-      </section>
+      {laptop && (
+        <section className="pn-section" aria-labelledby="pn-normal">
+          <div className="pn-switch-row">
+            <h3 id="pn-normal" style={{ fontWeight: 600 }}>
+              What a normal sync would keep
+            </h3>
+            <button type="button" role="switch" aria-checked={normalSync} aria-labelledby="pn-normal" className="pn-switch" onClick={() => setNormalSync(!normalSync)} />
+          </div>
+          {normalSync && <p className="pn-small">Showing what a normal sync would keep: whichever change arrived last. Your doc is unchanged.</p>}
+          <div className="pn-normal">
+            A normal sync would say: <b>Synced. No conflicts.</b>
+          </div>
+        </section>
+      )}
 
       <section className="pn-section" aria-labelledby="pn-caught">
         <h3 id="pn-caught">Who's caught up</h3>
@@ -270,6 +274,13 @@ export function SidePanel(props: SidePanelProps) {
       <section className="pn-section" aria-labelledby="pn-truck">
         <h3 id="pn-truck">Truck back</h3>
         <TruckBack view={view} engine={engine} size="small" />
+        {laptop && (
+          <div>
+            <button type="button" className="pn-btn" onClick={() => onOpen('self-test')}>
+              Run the 1,000-order test
+            </button>
+          </div>
+        )}
       </section>
 
       <p className="pn-small pn-quiet">Your colour: {colourName(myColour)}</p>

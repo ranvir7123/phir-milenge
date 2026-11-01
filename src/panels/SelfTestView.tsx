@@ -182,7 +182,7 @@ export function SelfTestView({ engine, bigScreen, layout, onClose }: SelfTestVie
 
 function Headline({ run, finished, running }: { run: Run; finished: boolean; running: boolean }) {
   const total = num(run.total);
-  const slowLine = run.slow ? <p className="pn-small pn-quiet">This device is slow, so it ran {num(SLOW_ORDERS)} orders instead of {num(ORDERS)}.</p> : null;
+  const slowLine = run.slow ? <p className="pn-small pn-quiet">This laptop is slow for {num(ORDERS)} orders, so it ran {num(SLOW_ORDERS)} shuffled orders instead.</p> : null;
   if (run.error) {
     return (
       <div className="pn-test-head" role="alert">
