@@ -1,0 +1,17 @@
+node_modules/
+dist/
+dev-dist/
+coverage/
+.superpowers/
+STATUS.md
+*.local
+.env*
+.vite/
+*.log
+
+# Planning notes and research stay on this laptop; only the app and hand-in files are public.
+research/
+docs/*
+!docs/handin/
+!docs/how-it-works.md
+.claude/

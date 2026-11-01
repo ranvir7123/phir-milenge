@@ -1,0 +1,52 @@
+/* Design tokens. Dark only. Never add a light theme. */
+:root {
+  --page: #171615;
+  --sheet: #1F1E1C;
+  --raised: #292725;
+  --text: #E8E4DC;
+  --quiet: #A8A298;
+  --hairline: #3A3733;
+  --beam: #8DB4EC;
+  --on-beam: #171615;
+  --warning: #F2A28A;
+  --w-yellow: #F0E442;
+  --w-orange: #E69F00;
+  --w-pink: #CC79A7;
+  --w-red: #D55E00;
+  --font-display: 'Yatra One', serif;
+  --font-text: 'Martel', serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
