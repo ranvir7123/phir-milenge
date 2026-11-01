@@ -8,13 +8,13 @@ export default defineConfig(({ command }) => ({
   plugins: [
     react(),
     VitePWA({
-      // The app shows its own "A newer Phir Milenge is ready" message.
+      // The app shows its own "A newer version of Relay Docs is ready" message.
       // The service worker must never reload the page by itself.
       registerType: 'prompt',
       injectRegister: false,
       manifest: {
-        name: 'Phir Milenge',
-        short_name: 'Phir Milenge',
+        name: 'Relay Docs',
+        short_name: 'Relay Docs',
         description: 'A document editor that works with no signal.',
         display: 'standalone',
         start_url: '.',

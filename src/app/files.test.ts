@@ -1,24 +1,27 @@
 import { describe, expect, test } from 'vitest';
-import { phirFileName, sizeText } from './files';
+import { docFileName, sizeText } from './files';
 
 // Mon 26 Oct 2026, 4:30 pm local time.
 const MON_430 = new Date(2026, 9, 26, 16, 30).getTime();
 
-describe('phirFileName', () => {
-  test('the example from the user experience plan', () => {
-    expect(phirFileName('Camp log: Sundarbans cyclone relief', 'Rina', MON_430)).toBe(
-      'Camp log - Sundarbans cyclone relief - Rina - Mon 4.30 pm.phir',
+describe('docFileName', () => {
+  test('the example from the user experience plan, ending in .relay', () => {
+    expect(docFileName('Camp log: Sundarbans cyclone relief', 'Rina', MON_430)).toBe(
+      'Camp log - Sundarbans cyclone relief - Rina - Mon 4.30 pm.relay',
     );
   });
   test('characters a file name cannot hold are dropped', () => {
-    expect(phirFileName('Kits / tarps? "today"', 'Asif', MON_430)).toBe('Kits tarps today - Asif - Mon 4.30 pm.phir');
+    expect(docFileName('Kits / tarps? "today"', 'Asif', MON_430)).toBe('Kits tarps today - Asif - Mon 4.30 pm.relay');
   });
   test('an empty title', () => {
-    expect(phirFileName('  ', 'Asif', MON_430)).toBe('Untitled doc - Asif - Mon 4.30 pm.phir');
+    expect(docFileName('  ', 'Asif', MON_430)).toBe('Untitled doc - Asif - Mon 4.30 pm.relay');
   });
   test('a very long title is cut', () => {
-    const name = phirFileName('x'.repeat(300), 'Asif', MON_430);
-    expect(name).toBe(`${'x'.repeat(80)} - Asif - Mon 4.30 pm.phir`);
+    const name = docFileName('x'.repeat(300), 'Asif', MON_430);
+    expect(name).toBe(`${'x'.repeat(80)} - Asif - Mon 4.30 pm.relay`);
+  });
+  test('another ending, for the damaged copy', () => {
+    expect(docFileName('Camp log damaged copy', 'Asif', MON_430, '.json')).toBe('Camp log damaged copy - Asif - Mon 4.30 pm.json');
   });
 });
 

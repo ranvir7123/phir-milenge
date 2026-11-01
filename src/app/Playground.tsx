@@ -59,7 +59,7 @@ const docs: HomeDocRecord[] = [
 const messages: Record<string, Message> = {
   stopped: {
     warn: true,
-    title: 'Phir Milenge stopped.',
+    title: 'Relay Docs stopped.',
     body: 'Your doc is saved on this phone up to your last change. Reload to carry on.',
     actions: [{ label: 'Reload', style: 'main', run() {} }],
   },
@@ -84,7 +84,7 @@ const messages: Record<string, Message> = {
   },
   newer: {
     warn: true,
-    title: "Rina's phone has a newer Phir Milenge.",
+    title: "Rina's phone has a newer version of Relay Docs.",
     body: "Rina's doc uses things this version can't read yet. Nothing in your doc was changed. Rina can still catch from you. Once you have internet, open the link to get the newer version, then catch again.",
     actions: [
       { label: 'Beam to Rina', style: 'beam', run() {} },
@@ -148,7 +148,7 @@ export function Playground() {
           : name === 'sheet: remove'
             ? { kind: 'remove', docId: 'd1', title: docs[0]!.title, onlyHere: 2 }
             : name === 'sheet: saved file'
-              ? { kind: 'saved-file', name: 'Camp log - Sundarbans cyclone relief - Rina - Mon 4.30 pm.phir', size: 14_300, bytes: new Uint8Array(14_300) }
+              ? { kind: 'saved-file', name: 'Camp log - Sundarbans cyclone relief - Rina - Mon 4.30 pm.relay', size: 14_300, bytes: new Uint8Array(14_300) }
               : name === 'sheet: add to home screen'
                 ? { kind: 'home-screen-how' }
                 : name === 'sheet: clock wrong'

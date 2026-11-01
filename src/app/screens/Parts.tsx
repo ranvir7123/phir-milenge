@@ -72,12 +72,12 @@ export function NoticeBar({ notice }: { notice: Notice | null }) {
   );
 }
 
-/** "A newer Phir Milenge is ready." Never reloads by itself. */
+/** "A newer version of Relay Docs is ready." Never reloads by itself. */
 export function UpdateBar({ onReload, onLater }: { onReload(): void; onLater(): void }) {
   return (
     <div className="notice notice-update" role="status">
       <span>
-        <b>A newer Phir Milenge is ready.</b> It opens next time you reload. Your docs stay as they are.
+        <b>A newer version of Relay Docs is ready.</b> It opens next time you reload. Your docs stay as they are.
       </span>
       <span className="notice-buttons">
         <button type="button" className="ui-btn ui-btn-main" onClick={onReload}>

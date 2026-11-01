@@ -1,9 +1,10 @@
-// .phir files: the name they're saved under, saving (a download, then the phone's share menu
+// Doc files: the name they're saved under, saving (a download, then the phone's share menu
 // where it accepts files) and picking one (2-user-experience.md, "The file backup").
+// New files end in .relay. Older ones end in .phir and open the same: the app checks what's inside, not the name.
 import { fileTime } from '../shared/time';
 
-/** "Camp log - Sundarbans cyclone relief - Rina - Mon 4.30 pm.phir" */
-export function phirFileName(title: string, writer: string, t: number): string {
+/** "Camp log - Sundarbans cyclone relief - Rina - Mon 4.30 pm.relay". `ending` swaps ".relay" for another. */
+export function docFileName(title: string, writer: string, t: number, ending = '.relay'): string {
   const clean = (s: string) =>
     s
       .replace(/\s*:\s*/g, ' - ')
@@ -12,7 +13,7 @@ export function phirFileName(title: string, writer: string, t: number): string {
       .replace(/\s+/g, ' ')
       .trim();
   const title80 = [...clean(title)].slice(0, 80).join('').trim();
-  return [title80 || 'Untitled doc', clean(writer), fileTime(t)].filter(Boolean).join(' - ') + '.phir';
+  return [title80 || 'Untitled doc', clean(writer), fileTime(t)].filter(Boolean).join(' - ') + ending;
 }
 
 /** "14 KB": whole kilobytes, at least 1. */

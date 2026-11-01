@@ -27,7 +27,7 @@ export function FirstOpen({ offline, onGo }: FirstOpenProps) {
   return (
     <main className="first-open">
       <div className="first-open-top">
-        <h1 className="display first-open-title">Phir Milenge</h1>
+        <h1 className="display first-open-title">Relay Docs</h1>
         <p className="first-open-line">A document editor that works with no signal. Phones swap what's new whenever they meet.</p>
       </div>
 

@@ -199,7 +199,7 @@ export function Sheets(p: SheetsProps) {
                 <span className="how-key how-add">Add</span>
               </span>
               <span>
-                Tap <b>Add</b>. From now on, open Phir Milenge from its icon.
+                Tap <b>Add</b>. From now on, open Relay Docs from its icon.
               </span>
             </li>
           </ol>

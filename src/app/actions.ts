@@ -6,7 +6,7 @@ import { useApp, type Message, type Session } from './state';
 import { holdDocLock } from './locks';
 import { makeSummary, titleOf } from './summary';
 import { onlyOnThisPhone } from './caughtUp';
-import { downloadFile, phirFileName, pickFiles, readFile, shareFile } from './files';
+import { docFileName, downloadFile, pickFiles, readFile, shareFile } from './files';
 import { BIG_BEAM_SECONDS, beamSeconds, durationText, honk, unlockSound } from '../beam';
 import { clockAhead, clockAheadText, daysLeft, showHomeScreenCard } from './warnings';
 import { layoutNow } from './layout';
@@ -24,14 +24,14 @@ export const PHIR_FORMAT = 1;
 const NO_STORAGE: Message = {
   warn: true,
   title: "This browser can't save docs.",
-  body: "Phir Milenge keeps everything on the phone, and this browser can't do that. Open the link in an up-to-date Chrome, Safari, Firefox or Edge.",
+  body: "Relay Docs keeps everything on the phone, and this browser can't do that. Open the link in an up-to-date Chrome, Safari, Firefox or Edge.",
   actions: [],
 };
 
 export function stoppedMessage(): Message {
   return {
     warn: true,
-    title: 'Phir Milenge stopped.',
+    title: 'Relay Docs stopped.',
     body: `Your doc is saved on this ${layoutNow()} up to your last change. Reload to carry on.`,
     actions: [{ label: 'Reload', style: 'main', run: () => location.reload() }],
   };
@@ -221,7 +221,7 @@ function damagedMessage(docId: DocId, changes: Change[]): Message {
         label: 'Save the damaged copy',
         run: () => {
           const bytes = new TextEncoder().encode(JSON.stringify({ docId, title, changes }));
-          downloadFile(bytes, phirFileName(`${title} damaged copy`, get().me?.name ?? '', Date.now()).replace(/\.phir$/, '.json'));
+          downloadFile(bytes, docFileName(`${title} damaged copy`, get().me?.name ?? '', Date.now(), '.json'));
         },
       },
     ],
@@ -453,7 +453,7 @@ export function saveFile(): void {
   if (!s || !me) return;
   const title = titleOf(s.view);
   const bytes = engine.encodePhir({ docId: s.docId, title, changes: s.engine.changes() });
-  saved(bytes, phirFileName(title, me.name, Date.now()));
+  saved(bytes, docFileName(title, me.name, Date.now()));
 }
 
 export async function saveFileOf(docId: DocId): Promise<void> {
@@ -462,7 +462,7 @@ export async function saveFileOf(docId: DocId): Promise<void> {
   if (!me || !row) return;
   try {
     const changes = (await store.loadChanges(docId)).map((c) => c.change);
-    saved(engine.encodePhir({ docId, title: row.title, changes }), phirFileName(row.title, me.name, Date.now()));
+    saved(engine.encodePhir({ docId, title: row.title, changes }), docFileName(row.title, me.name, Date.now()));
   } catch (e) {
     stopped(e);
   }
@@ -531,13 +531,13 @@ function fileProblem(reason: 'not-phir' | 'newer' | 'damaged'): void {
   const pickAgain = { label: 'Pick another file', style: 'main' as const, run: openFilePicker };
   const back = { label: backLabel(), run: backToDocOrHome };
   if (reason === 'not-phir')
-    show({ warn: true, title: "That isn't a Phir Milenge file.", body: 'Pick a file whose name ends in .phir. Nothing was changed.', actions: [pickAgain, back] });
+    show({ warn: true, title: "That isn't a Relay Docs file.", body: 'Pick a file whose name ends in .relay or .phir. Nothing was changed.', actions: [pickAgain, back] });
   if (reason === 'damaged')
     show({ warn: true, title: 'This file is damaged.', body: 'Nothing was changed. Ask for a fresh copy.', actions: [pickAgain, back] });
   if (reason === 'newer')
     show({
       warn: true,
-      title: 'This file is from a newer Phir Milenge.',
+      title: 'This file is from a newer version of Relay Docs.',
       body: "This version can't read it yet. Nothing was changed. Get the newer version once you have internet, then open it again.",
       actions: [back],
     });
@@ -579,7 +579,7 @@ export function stopBeamOrCatch(): void {
   backToDocOrHome();
 }
 
-/** The first hello frame: stop early for a newer Phir Milenge. */
+/** The first hello frame: stop early for a newer version of Relay Docs. */
 export function onHello(hello: BeamHello): 'continue' | 'stop' {
   if (hello.format <= PHIR_FORMAT) return 'continue';
   const name = hello.senderName;
@@ -587,7 +587,7 @@ export function onHello(hello: BeamHello): 'continue' | 'stop' {
   const s = get().session;
   show({
     warn: true,
-    title: `${whose} phone has a newer Phir Milenge.`,
+    title: `${whose} phone has a newer version of Relay Docs.`,
     body: `${whose} doc uses things this version can't read yet. Nothing in your doc was changed. ${name || 'They'} can still catch from you. Once you have internet, open the link to get the newer version, then catch again.`,
     actions: [
       ...(s ? [{ label: `Beam to ${name || 'them'}`, style: 'beam' as const, run: () => startBeam() }] : []),

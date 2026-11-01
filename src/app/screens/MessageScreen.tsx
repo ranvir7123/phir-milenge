@@ -26,7 +26,7 @@ export function MessageScreen({ message, onBack }: { message: Message; onBack?()
   );
 }
 
-/** "Phir Milenge stopped." when a screen hits a bug. Every change is already stored, so a reload is safe. */
+/** "Relay Docs stopped." when a screen hits a bug. Every change is already stored, so a reload is safe. */
 export class Crash extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
 
@@ -44,7 +44,7 @@ export class Crash extends Component<{ children: ReactNode }, { failed: boolean 
       <MessageScreen
         message={{
           warn: true,
-          title: 'Phir Milenge stopped.',
+          title: 'Relay Docs stopped.',
           body: `Your doc is saved on this ${layoutNow()} up to your last change. Reload to carry on.`,
           actions: [{ label: 'Reload', style: 'main', run: () => location.reload() }],
         }}

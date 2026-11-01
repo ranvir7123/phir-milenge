@@ -158,7 +158,7 @@ export function Home(p: HomeProps) {
   return (
     <div className={`home home-${p.layout}`}>
       <header className="home-top">
-        <h1 className="display home-title">Phir Milenge</h1>
+        <h1 className="display home-title">Relay Docs</h1>
         <button type="button" className="name-chip one-line" onClick={p.onMe} title={nameWithPlace(p.me.name, p.me.place)}>
           {chip}
         </button>
@@ -187,7 +187,7 @@ export function Home(p: HomeProps) {
           <div className="home-card">
             <p>
               <b>Keep it on your home screen.</b> On iPhone, Safari may clear a website's saved docs if you don't open it for about a week. Add
-              Phir Milenge to your home screen so your docs stay.
+              Relay Docs to your home screen so your docs stay.
             </p>
             <div className="home-card-buttons">
               <button type="button" className="ui-btn ui-btn-main" onClick={() => p.onHomeCard(true)}>
