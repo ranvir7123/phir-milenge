@@ -22,10 +22,16 @@ export interface DocScreenProps {
 type Local = null | 'menu' | 'panel' | 'saved';
 type Request = { what: 'find' | 'outline' | 'word-count'; at: number } | null;
 
+/** A text box or the page has the cursor, so a phone keyboard can be up. */
+function typing(): boolean {
+  return document.activeElement?.matches('input, textarea, [contenteditable="true"]') ?? false;
+}
+
 /**
- * True while the phone's keyboard is up: the Catch and Beam bar hides. Compares against the tallest the
- * screen has been, because Android shrinks the whole page for the keyboard while iPhone shrinks only the
- * visible part.
+ * True while the phone's keyboard is up: the Catch and Beam bar hides. The same rule as the editor's
+ * toolbar, so the toolbar lands right on top of the keyboard: something has the cursor, and the screen is
+ * over 150px shorter than the tallest it has been at this width (Android shrinks the whole page for the
+ * keyboard, iPhone only the visible part; both show here).
  */
 function useKeyboardOpen(): boolean {
   const [open, setOpen] = useState(false);
@@ -41,10 +47,16 @@ function useKeyboardOpen(): boolean {
         tallest = vv.height;
       }
       tallest = Math.max(tallest, vv.height);
-      setOpen(tallest - vv.height > 150);
+      setOpen(typing() && tallest - vv.height > 150);
     };
     vv.addEventListener('resize', check);
-    return () => vv.removeEventListener('resize', check);
+    document.addEventListener('focusin', check);
+    document.addEventListener('focusout', check);
+    return () => {
+      vv.removeEventListener('resize', check);
+      document.removeEventListener('focusin', check);
+      document.removeEventListener('focusout', check);
+    };
   }, []);
   return open;
 }
