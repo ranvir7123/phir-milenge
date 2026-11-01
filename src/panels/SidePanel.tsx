@@ -50,6 +50,8 @@ export function SidePanel(props: SidePanelProps) {
   const { engine, view, me, commit, bigScreen, layout, normalSync, setNormalSync, onJump, onOpen, cursorBlock } = props;
   // The normal-sync switch and the 1,000-order test are laptop only (2-user-experience.md). Phones don't show them.
   const laptop = layout === 'laptop' || bigScreen;
+  // This device's own word, the same one the doc's "Saved on this laptop" uses.
+  const here = layout;
   const [page, setPage] = useState<'main' | 'settle'>('main');
   const [banner, setBanner] = useState<string | null>(null);
   const nameFor = (a: ActorId) => cutName(nameOf(view, a));
@@ -134,7 +136,7 @@ export function SidePanel(props: SidePanelProps) {
         </section>
       )}
 
-      {cursorBlock && <WhoHas engine={engine} view={view} block={cursorBlock} bigScreen={bigScreen} />}
+      {cursorBlock && <WhoHas engine={engine} view={view} block={cursorBlock} bigScreen={bigScreen} here={here} />}
 
       <section className="pn-section" aria-labelledby="pn-rules">
         <h3 id="pn-rules">Rules</h3>
@@ -179,7 +181,7 @@ export function SidePanel(props: SidePanelProps) {
                 </span>
                 <div className="pn-rule-body">
                   <span className="pn-rule-name">Can't check this rule.</span>
-                  <span className="pn-rule-sub">It was made in a newer Phir Milenge. It's kept in the doc and travels on, but this phone can't check it.</span>
+                  <span className="pn-rule-sub">It was made in a newer Phir Milenge. It's kept in the doc and travels on, but this {here} can't check it.</span>
                 </div>
               </div>
             );
@@ -251,10 +253,10 @@ export function SidePanel(props: SidePanelProps) {
         <h3 id="pn-caught">Who's caught up</h3>
         <p className="pn-small pn-quiet">
           {counts.total <= 1
-            ? 'Only you have this doc, as far as this phone knows.'
+            ? `Only you have this doc, as far as this ${here} knows.`
             : counts.have <= 1
-              ? `No one else has everything you have yet, as far as this phone knows. ${counts.total - 1} others have the doc.`
-              : `${counts.have} of ${counts.total} have everything you have, as far as this phone knows.`}
+              ? `No one else has everything you have yet, as far as this ${here} knows. ${counts.total - 1} others have the doc.`
+              : `${counts.have} of ${counts.total} have everything you have, as far as this ${here} knows.`}
         </p>
         {rows.map((r) => {
           const c = colourOf(view, r.actor);

@@ -1,10 +1,13 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { buildScenario } from '../demo/scenario';
 import { WRITERS } from '../demo/writers';
 import { engine as model } from '../model';
+import { campLog } from '../templates';
 import { trailRows } from './knowledge';
 import { brokenDetail } from './rules';
-import { trailLine } from './WhoHas';
+import { trailLine, WhoHas } from './WhoHas';
 
 // The panels' words on the real demo docs, built the same way the demo setup builds them.
 const scenario = buildScenario(model);
@@ -47,5 +50,19 @@ describe('"Where this has been" agrees with "3 of 4 have it"', () => {
     // The case the run-through found: some phone has the newest words but not the whole paragraph, and says so.
     expect(partLines.length).toBeGreaterThan(0);
     for (const line of partLines) expect(line).toMatch(/doesn't have all of it yet$/i);
+  });
+});
+
+describe('on a laptop the panel says laptop', () => {
+  it('says "this laptop" where a phone says "this phone"', () => {
+    const me = WRITERS.base.actor;
+    const { engine: doc } = model.createDoc(me, campLog.ops(me, model.intents, model.newItemId));
+    const view = doc.view();
+    const block = view.blocks[0]!.id;
+    const draw = (here: 'phone' | 'laptop') => renderToStaticMarkup(createElement(WhoHas, { engine: doc, view, block, bigScreen: false, here }));
+    expect(draw('laptop')).toContain('Only you have this, as far as this laptop knows.');
+    expect(draw('phone')).toContain('Only you have this, as far as this phone knows.');
+    const notYet = { actor: WRITERS.rina.actor, t: null, via: 'not-yet' as const, from: null };
+    expect(trailLine(notYet, view, Date.now(), 'laptop')).toMatch(/Not yet, as far as this laptop knows$/);
   });
 });
