@@ -568,7 +568,7 @@ button.pn-flag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 44px;
+  min-height: var(--pn-btn);
   padding: 0 8px;
   font-size: calc(var(--pn-text) - 2px);
   color: var(--quiet);
@@ -1089,9 +1089,42 @@ button.pn-flag {
 }
 
 .pn-slider {
-  height: 44px;
+  height: var(--pn-btn);
   accent-color: var(--text);
   cursor: pointer;
+}
+
+/* Big screen: the replayed doc reads at 30px from the back of the room, like the doc itself. */
+.pn-big .pn-preview {
+  font-size: 30px;
+  padding: 28px 32px;
+  max-width: 1100px;
+}
+
+.pn-big .pn-preview h1 {
+  font-size: 44px;
+}
+
+.pn-big .pn-preview h2 {
+  font-size: 34px;
+}
+
+.pn-big .pn-preview .pn-preview-h3 {
+  font-size: 32px;
+}
+
+.pn-big .pn-preview table {
+  font-size: var(--pn-text);
+}
+
+.pn-big .pn-replay-status,
+.pn-big .pn-replay-bar > * {
+  max-width: 1100px;
+}
+
+.pn-big .pn-ticks {
+  height: 22px;
+  gap: 2px;
 }
 
 .pn-replay-buttons {
@@ -1107,6 +1140,7 @@ button.pn-flag {
 
 .pn-test {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   padding: 4px 16px 24px;
   width: 100%;
@@ -1214,6 +1248,7 @@ button.pn-flag {
 
 .pn-rulebuilder {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   padding: 4px 22px 28px;
   max-width: 640px;
@@ -1238,6 +1273,8 @@ button.pn-flag {
 
 .pn-sentence .pn-select {
   min-width: 0;
+  max-width: 100%;
+  text-overflow: ellipsis;
 }
 
 .pn-number {
@@ -1262,4 +1299,9 @@ button.pn-flag {
 
 .pn-acts-row {
   grid-template-columns: 1fr 1fr;
+}
+
+.pn-big .pn-rulebuilder {
+  max-width: 900px;
+  gap: 22px;
 }

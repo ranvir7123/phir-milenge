@@ -87,9 +87,13 @@ type Screen =
   | 'real-side'
   | 'real-replay'
   | 'replay-empty'
+  | 'replay-long'
+  | 'replay-error'
   | 'real-test'
   | 'test-diff'
   | 'test-slow'
+  | 'test-empty'
+  | 'test-error'
   | 'real-rule'
   | 'rule-none';
 
@@ -110,9 +114,13 @@ const SCREENS: { id: Screen; label: string }[] = [
   { id: 'real-side', label: 'Panel, real engine' },
   { id: 'real-replay', label: 'Replay, real engine' },
   { id: 'replay-empty', label: 'Replay, nothing yet' },
+  { id: 'replay-long', label: 'Replay, long name' },
+  { id: 'replay-error', label: "Replay, can't open" },
   { id: 'real-test', label: '1,000 orders, real engine' },
   { id: 'test-diff', label: '1,000 orders, 2 differ' },
   { id: 'test-slow', label: '1,000 orders, slow laptop' },
+  { id: 'test-empty', label: '1,000 orders, empty doc' },
+  { id: 'test-error', label: "1,000 orders, can't run" },
   { id: 'real-rule', label: 'Add a rule, real doc' },
   { id: 'rule-none', label: 'Add a rule, no tables' },
 ];
@@ -133,6 +141,7 @@ export function Playground() {
   const [log, setLog] = useState<string[]>([]);
   const [cursor, setCursor] = useState(true);
   const [wide, setWide] = useState(false);
+  const [big, setBig] = useState(false);
   // A new key each time the screen changes, so the lorry drives again and panels start fresh.
   const [runs, setRuns] = useState(0);
 
@@ -141,22 +150,51 @@ export function Playground() {
   const commit = (ops: Op[]) => say(`commit: ${ops.map((o) => (o.o === 'set' ? o.k : o.list)).join(', ')}`);
 
   const real = screen.startsWith('real-');
-  const engine = useMemo(
-    () =>
-      real
-        ? realEngine()
-        : screen === 'side-empty' || screen === 'rule-none' || screen === 'replay-empty'
-          ? playEngine({ view: emptyView, changes: changes.filter((c) => c.actor === BASE && c.kind === 'edit').slice(0, 1), holders: [BASE] })
-          : playEngine({ view: screen === 'side-odd' || screen === 'caught-long' ? oddView : playView, changes, onCommit: commit }),
+  const engine = useMemo(() => {
+    if (real) return realEngine();
+    switch (screen) {
+      case 'side-empty':
+      case 'rule-none':
+      case 'replay-empty':
+        return playEngine({ view: emptyView, changes: changes.filter((c) => c.actor === BASE && c.kind === 'edit').slice(0, 1), holders: [BASE] });
+      case 'replay-error':
+        return {
+          ...playEngine({ changes }),
+          replay: () => {
+            throw new Error('replay failed');
+          },
+        };
+      case 'test-empty':
+        return playEngine({ changes: [] });
+      case 'replay-long':
+        return playEngine({ view: oddView, changes, replay: changes.filter((c) => c.kind === 'edit').map((c) => ({ change: c.id, actor: MEHER, t: c.t, view: oddView })) });
+      case 'side-odd':
+      case 'caught-long':
+        return playEngine({ view: oddView, changes, onCommit: commit });
+      default:
+        return playEngine({ view: playView, changes, onCommit: commit });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [screen, changes],
-  );
+  }, [screen, changes]);
   const view = engine.view();
   // The test screens pick their self-test: the real engine's, or a made-up one that is slow or finds differences.
-  usePlayEngine(playIntents, screen === 'real-test' ? null : screen === 'test-diff' ? playSelfTest(0.5, [212, 733]) : screen === 'test-slow' ? playSelfTest(40) : playSelfTest(2));
+  usePlayEngine(
+    playIntents,
+    screen === 'real-test'
+      ? null
+      : screen === 'test-diff'
+        ? playSelfTest(0.5, [212, 733])
+        : screen === 'test-slow'
+          ? playSelfTest(40)
+          : screen === 'test-error'
+            ? () => {
+                throw new Error('The engine stopped partway.');
+              }
+            : playSelfTest(2),
+  );
   const me = real ? WRITERS.base.actor : BASE;
   const layout = wide ? ('laptop' as const) : ('phone' as const);
-  const base = { engine, view, me, commit, bigScreen: false, layout };
+  const base = { engine, view, me, commit, bigScreen: big, layout };
   const cb = {
     onBeamBack: () => say('Beam back'),
     onReadNew: () => say("Read what's new"),
@@ -227,11 +265,15 @@ export function Playground() {
       break;
     case 'real-replay':
     case 'replay-empty':
+    case 'replay-long':
+    case 'replay-error':
       stage = <ReplayView {...base} onClose={close} />;
       break;
     case 'real-test':
     case 'test-diff':
     case 'test-slow':
+    case 'test-empty':
+    case 'test-error':
       stage = <SelfTestView {...base} onClose={close} />;
       break;
     case 'real-rule':
@@ -262,6 +304,9 @@ export function Playground() {
         </button>
         <button type="button" className="pn-btn" aria-pressed={wide} onClick={() => setWide((w) => !w)}>
           Laptop layout
+        </button>
+        <button type="button" className="pn-btn" aria-pressed={big} onClick={() => setBig((b) => !b)}>
+          Big screen
         </button>
         {log.length > 0 && <span className="pn-tiny" style={{ whiteSpace: 'nowrap' }}>{log[0]}</span>}
       </nav>

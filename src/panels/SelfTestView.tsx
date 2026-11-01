@@ -29,10 +29,12 @@ interface Run {
   differing: Differ[];
   slow: boolean;
   stopped: boolean;
+  /** The doc has no changes yet, so there's nothing to rebuild. */
+  empty: boolean;
   error: string | null;
 }
 
-const fresh = (): Run => ({ total: ORDERS, done: 0, same: 0, expected: null, differing: [], slow: false, stopped: false, error: null });
+const fresh = (): Run => ({ total: ORDERS, done: 0, same: 0, expected: null, differing: [], slow: false, stopped: false, empty: false, error: null });
 
 function safeChanges(engine: DocEngine): readonly Change[] {
   try {
@@ -65,7 +67,7 @@ export function SelfTestView({ engine, bigScreen, layout, onClose }: SelfTestVie
     stop.current = false;
     setRun(state);
     if (changes.length === 0) {
-      setRun({ ...state, error: 'This doc has no changes to rebuild yet.' });
+      setRun({ ...state, empty: true });
       return;
     }
     const step = () => {
@@ -104,8 +106,8 @@ export function SelfTestView({ engine, bigScreen, layout, onClose }: SelfTestVie
     };
   }, [engine, attempt]);
 
-  const finished = run.done >= run.total && !run.error;
-  const running = !finished && !run.stopped && !run.error;
+  const finished = run.done >= run.total && !run.error && !run.empty;
+  const running = !finished && !run.stopped && !run.error && !run.empty;
   const fp = run.expected ?? mine;
   const columns = layout === 'phone' && !bigScreen ? 25 : 40;
 
@@ -141,7 +143,7 @@ export function SelfTestView({ engine, bigScreen, layout, onClose }: SelfTestVie
           <Headline run={run} finished={finished} running={running} />
         </div>
         <div className="pn-test-main">
-          <Grid run={run} columns={columns} />
+          {!run.error && !run.empty && <Grid run={run} columns={columns} />}
           {run.differing.length > 0 && finished && (
             <ol className="pn-test-orders pn-small">
               {run.differing.slice(0, 6).map((d) => (
@@ -169,7 +171,7 @@ export function SelfTestView({ engine, bigScreen, layout, onClose }: SelfTestVie
               </button>
             )}
             {!running && (
-              <button type="button" className={`pn-btn pn-btn-bar${finished && run.differing.length === 0 ? ' pn-btn-main' : ''}`} onClick={onClose}>
+              <button type="button" className={`pn-btn pn-btn-bar${(finished && run.differing.length === 0) || run.empty ? ' pn-btn-main' : ''}`} onClick={onClose}>
                 Back to the doc
               </button>
             )}
@@ -183,6 +185,14 @@ export function SelfTestView({ engine, bigScreen, layout, onClose }: SelfTestVie
 function Headline({ run, finished, running }: { run: Run; finished: boolean; running: boolean }) {
   const total = num(run.total);
   const slowLine = run.slow ? <p className="pn-small pn-quiet">This laptop is slow for {num(ORDERS)} orders, so it ran {num(SLOW_ORDERS)} shuffled orders instead.</p> : null;
+  if (run.empty) {
+    return (
+      <div className="pn-test-head">
+        <h2>Nothing to test yet</h2>
+        <p className="pn-quiet">This doc has no changes yet. Write something, then come back.</p>
+      </div>
+    );
+  }
   if (run.error) {
     return (
       <div className="pn-test-head" role="alert">
