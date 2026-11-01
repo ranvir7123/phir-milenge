@@ -441,12 +441,14 @@
   pointer-events: none;
 }
 
-.pm-tip {
+.pm-blank::after {
+  content: attr(data-tip);
   display: block;
   margin-top: 8px;
   color: var(--quiet);
   font-size: 15px;
   line-height: 1.5;
+  pointer-events: none;
   user-select: none;
 }
 
@@ -763,6 +765,8 @@
   background: var(--page);
   text-align: left;
   vertical-align: top;
+  /* A column grows to fit its longest word; only a word wider than the cell's limit breaks. */
+  overflow-wrap: break-word;
 }
 
 .ed-laptop .tb-table th,
@@ -816,17 +820,25 @@
 }
 
 .tb-table tr.is-broken td:first-child {
+  padding-left: calc(10px + 1em + 6px);
   box-shadow: inset 3px 0 0 var(--warning), 1px 0 0 var(--hairline);
 }
 
+/* The warning sits in the cell's left padding, so the name keeps the whole width. */
 .tb-flag {
-  float: left;
-  margin-top: 4px;
-  width: 15px;
-  height: 15px;
-  margin-right: 4px;
-  vertical-align: -2px;
+  position: absolute;
+  top: calc(8px + 0.225em);
+  left: 10px;
+  display: block;
+  width: 1em;
+  height: 1em;
   color: var(--warning);
+}
+
+.tb-table .tb-flag .ed-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .tb-two {
@@ -1454,7 +1466,7 @@
 .ed-big .dm-other,
 .ed-big .tb-table th,
 .ed-big .tb-two-who,
-.ed-big .pm-tip,
+.ed-big .pm-blank::after,
 .ed-big .pm-caret-name,
 .ed-big .ed-find-count,
 .ed-big .ol-head,
@@ -1570,6 +1582,15 @@
   min-width: 140px;
   max-width: 360px;
   padding: 12px 14px;
+}
+
+.ed-big .tb-table tr.is-broken td:first-child {
+  padding-left: calc(14px + 1em + 8px);
+}
+
+.ed-big .tb-flag {
+  top: calc(12px + 0.225em);
+  left: 14px;
 }
 
 .ed-big .sh-laptop .sh-box {

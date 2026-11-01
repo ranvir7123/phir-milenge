@@ -427,19 +427,13 @@ function phirExtension(bridge: Bridge): AnyExtension {
               if (node.type.name !== 'para') return;
               const a = node.attrs as ParaAttrs;
               if (blank && index === 1 && node.content.size === 0) {
-                decos.push(Decoration.node(pos, pos + node.nodeSize, { class: 'is-empty', 'data-placeholder': EMPTY_DOC }));
+                // The tip is drawn by the paragraph itself, on its own line below the empty one.
                 decos.push(
-                  Decoration.widget(
-                    pos + 1,
-                    () => {
-                      const tip = document.createElement('span');
-                      tip.className = 'pm-tip';
-                      tip.contentEditable = 'false';
-                      tip.textContent = EMPTY_TIP;
-                      return tip;
-                    },
-                    { key: 'empty-tip', side: 1, ignoreSelection: true },
-                  ),
+                  Decoration.node(pos, pos + node.nodeSize, {
+                    class: 'is-empty pm-blank',
+                    'data-placeholder': EMPTY_DOC,
+                    'data-tip': EMPTY_TIP,
+                  }),
                 );
               }
               if (a.kind === 'li' && a.list === 'check' && id) {
