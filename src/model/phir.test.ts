@@ -51,15 +51,30 @@ describe('the .phir file', () => {
     expect(decodePhir(bytes)).toEqual({ ok: false, reason: 'newer', format: 2 });
   });
 
-  test('every single changed byte after the header is caught as damaged', () => {
-    const bytes = encodePhir(sampleDoc());
-    for (let i = 5; i < bytes.length; i++) {
-      const bad = bytes.slice();
-      bad[i]! ^= 0x01;
-      const r = decodePhir(bad);
-      expect(r.ok, `byte ${i}`).toBe(false);
-      expect(r.ok ? null : r.reason).toBe('damaged');
+  test('a changed bit after the header never opens as a different doc', () => {
+    // Deflate ignores a few bits in its tables, so a flip there opens the very same doc (about 2 in 1,000).
+    // Every flip that changes what's inside is caught as damaged. Ids and the note's time differ each run, so try several files.
+    let flips = 0;
+    let caught = 0;
+    for (let run = 0; run < 10; run++) {
+      const doc = sampleDoc();
+      const bytes = encodePhir(doc);
+      for (let i = 5; i < bytes.length; i++) {
+        for (let bit = 0; bit < 8; bit++) {
+          const bad = bytes.slice();
+          bad[i]! ^= 1 << bit;
+          const r = decodePhir(bad);
+          flips++;
+          if (!r.ok) {
+            expect(r.reason, `byte ${i} bit ${bit}`).toBe('damaged');
+            caught++;
+          } else {
+            expect({ docId: r.docId, title: r.title, changes: r.changes }, `byte ${i} bit ${bit}`).toEqual(doc);
+          }
+        }
+      }
     }
+    expect(caught / flips).toBeGreaterThan(0.99);
   });
 
   test('a cut-off file is damaged, at every length', () => {
