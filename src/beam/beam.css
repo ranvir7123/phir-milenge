@@ -1,12 +1,12 @@
 /* Beam and catch. Colours only from src/shared/tokens.css; the code itself is black on a white card. */
 
-.beam-page {
+.bm-beam-page {
   max-width: 640px;
   margin: 0 auto;
   padding: 16px 16px 48px;
 }
 
-.beam-title {
+.bm-beam-title {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 30px;
@@ -14,27 +14,27 @@
   margin: 8px 0 4px;
 }
 
-.beam-sub {
+.bm-beam-sub {
   color: var(--quiet);
   font-size: 15px;
   margin: 0 0 16px;
 }
 
-.beam-label {
+.bm-beam-label {
   display: block;
   color: var(--quiet);
   font-size: 14px;
   margin: 16px 0 6px;
 }
 
-.seg {
+.bm-seg {
   display: flex;
   border: 1px solid var(--hairline);
   border-radius: 8px;
   overflow: hidden;
 }
 
-.seg button {
+.bm-seg button {
   flex: 1 1 0;
   min-height: 44px;
   min-width: 0;
@@ -47,24 +47,24 @@
   cursor: pointer;
 }
 
-.seg button:first-child {
+.bm-seg button:first-child {
   border-left: 0;
 }
 
-.seg button[aria-pressed='true'] {
+.bm-seg button[aria-pressed='true'] {
   background: var(--raised);
   box-shadow: inset 0 -3px 0 var(--text);
   font-weight: 700;
 }
 
-.btn-row {
+.bm-btn-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
 }
 
-.btn {
+.bm-btn {
   min-height: 48px;
   padding: 0 20px;
   border-radius: 8px;
@@ -75,35 +75,35 @@
   cursor: pointer;
 }
 
-.btn:disabled {
+.bm-btn:disabled {
   color: var(--quiet);
   cursor: default;
 }
 
-.btn-beam {
+.bm-btn-beam {
   background: var(--beam);
   border-color: var(--beam);
   color: var(--on-beam);
   font-weight: 700;
 }
 
-.btn-wide {
+.bm-btn-wide {
   flex: 1 1 auto;
 }
 
-.beam-code-box {
+.bm-beam-code-box {
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
-.beam-code {
+.bm-beam-code {
   display: block;
   border-radius: 6px;
   image-rendering: pixelated;
 }
 
-.camera-box {
+.bm-camera-box {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -113,49 +113,49 @@
   overflow: hidden;
 }
 
-.camera-video {
+.bm-camera-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.corner {
+.bm-corner {
   position: absolute;
   width: 32px;
   height: 32px;
   border: 0 solid var(--text);
 }
 
-.corner.tl {
+.bm-corner.bm-tl {
   top: 14%;
   left: 14%;
   border-top-width: 3px;
   border-left-width: 3px;
 }
 
-.corner.tr {
+.bm-corner.bm-tr {
   top: 14%;
   right: 14%;
   border-top-width: 3px;
   border-right-width: 3px;
 }
 
-.corner.bl {
+.bm-corner.bm-bl {
   bottom: 14%;
   left: 14%;
   border-bottom-width: 3px;
   border-left-width: 3px;
 }
 
-.corner.br {
+.bm-corner.bm-br {
   bottom: 14%;
   right: 14%;
   border-bottom-width: 3px;
   border-right-width: 3px;
 }
 
-.progress {
+.bm-progress {
   height: 8px;
   border-radius: 4px;
   background: var(--hairline);
@@ -163,30 +163,30 @@
   margin: 12px 0 8px;
 }
 
-.progress > span {
+.bm-progress > span {
   display: block;
   height: 100%;
   background: var(--text);
   transition: width 120ms linear;
 }
 
-.beam-line {
+.bm-beam-line {
   margin: 8px 0;
   overflow-wrap: anywhere;
 }
 
-.beam-quiet {
+.bm-beam-quiet {
   color: var(--quiet);
   font-size: 15px;
   margin: 4px 0;
   overflow-wrap: anywhere;
 }
 
-.beam-warning {
+.bm-beam-warning {
   color: var(--warning);
 }
 
-.warn-icon {
+.bm-warn-icon {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -194,7 +194,7 @@
   margin-right: 6px;
 }
 
-.stats {
+.bm-stats {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 2px 16px;
@@ -202,22 +202,22 @@
   margin: 12px 0;
 }
 
-.stats dt {
+.bm-stats dt {
   color: var(--quiet);
 }
 
-.stats dd {
+.bm-stats dd {
   margin: 0;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 
-.checksum {
+.bm-checksum {
   font-family: ui-monospace, monospace;
   letter-spacing: 0.08em;
 }
 
-.notice {
+.bm-notice {
   background: var(--sheet);
   border: 1px solid var(--hairline);
   border-radius: 8px;
@@ -225,42 +225,42 @@
   margin: 12px 0;
 }
 
-.notice h2 {
+.bm-notice h2 {
   font-size: 17px;
   margin: 0 0 4px;
 }
 
-.notice p {
+.bm-notice p {
   margin: 0;
   font-size: 15px;
 }
 
-.runs {
+.bm-runs {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 
-.runs th,
-.runs td {
+.bm-runs th,
+.bm-runs td {
   border-bottom: 1px solid var(--hairline);
   padding: 6px 4px;
   text-align: left;
   white-space: nowrap;
 }
 
-.runs th {
+.bm-runs th {
   color: var(--quiet);
   font-weight: 400;
 }
 
-.runs-box {
+.bm-runs-box {
   overflow-x: auto;
   margin-top: 8px;
 }
 
-.check-row {
+.bm-check-row {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -270,14 +270,14 @@
   cursor: pointer;
 }
 
-.check-row input {
+.bm-check-row input {
   width: 22px;
   height: 22px;
   accent-color: var(--text);
 }
 
 /* With `fill` the code takes the free space. Centred by layout, not a transform, so it sits on whole pixels. */
-.beam-code-box.fill {
+.bm-beam-code-box.bm-fill {
   flex: 1 1 0;
   min-height: 120px;
   align-self: stretch;
@@ -286,7 +286,7 @@
 }
 
 /* The Beam and Catch screens fill whatever box the app gives them (the whole phone, or a side panel). */
-.beam-screen {
+.bm-beam-screen {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -297,7 +297,7 @@
   overflow: hidden;
 }
 
-.beam-stage {
+.bm-beam-stage {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -309,11 +309,11 @@
   text-align: center;
 }
 
-.beam-stage .beam-code-box.fill {
+.bm-beam-stage .bm-beam-code-box.bm-fill {
   min-height: 240px;
 }
 
-.sign {
+.bm-sign {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 32px;
@@ -321,14 +321,14 @@
   margin: 0;
 }
 
-.beam-hint {
+.bm-beam-hint {
   font-size: 15px;
   line-height: 1.5;
   max-width: 34ch;
   margin: 0;
 }
 
-.beam-small {
+.bm-beam-small {
   font-size: 13px;
   line-height: 1.5;
   color: var(--quiet);
@@ -337,7 +337,7 @@
 }
 
 /* The bottom bar: at the thumb, buttons 48px tall, never wider than a comfortable row on a laptop. */
-.beam-bar {
+.bm-beam-bar {
   flex: 0 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -346,36 +346,36 @@
   border-top: 1px solid var(--hairline);
 }
 
-.beam-bar .btn {
+.bm-beam-bar .bm-btn {
   min-width: 0;
   padding: 0 12px;
   font-weight: 600;
 }
 
-.span-all {
+.bm-span-all {
   grid-column: 1 / -1;
 }
 
-.btn-solid {
+.bm-btn-solid {
   background: var(--raised);
   border-color: var(--raised);
 }
 
-.beam-screen.broadcast .sign {
+.bm-beam-screen.bm-broadcast .bm-sign {
   font-size: 48px;
 }
 
-.beam-screen.broadcast .beam-small {
+.bm-beam-screen.bm-broadcast .bm-beam-small {
   font-size: 22px;
   max-width: 48ch;
 }
 
-.beam-screen.broadcast .beam-bar .btn {
+.bm-beam-screen.bm-broadcast .bm-beam-bar .bm-btn {
   font-size: 22px;
   min-height: 56px;
 }
 
-.back-link {
+.bm-back-link {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -389,7 +389,7 @@
   cursor: pointer;
 }
 
-.back-link svg {
+.bm-back-link svg {
   width: 20px;
   height: 20px;
   fill: none;
@@ -399,7 +399,7 @@
   stroke-linejoin: round;
 }
 
-.catch-column {
+.bm-catch-column {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -411,7 +411,7 @@
   padding-top: 4px;
 }
 
-.catch-camera {
+.bm-catch-camera {
   flex: 1 1 auto;
   min-height: 160px;
   margin: 0 14px;
@@ -419,36 +419,36 @@
   flex-direction: column;
 }
 
-.catch-view {
+.bm-catch-view {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
 }
 
-.catch-view.hidden {
+.bm-catch-view.bm-hidden {
   display: none;
 }
 
-.catch-view .camera-box {
+.bm-catch-view .bm-camera-box {
   aspect-ratio: auto;
   max-height: none;
   height: 100%;
 }
 
-.catch-progress {
+.bm-catch-progress {
   flex: 0 0 auto;
   padding: 14px 16px 6px;
 }
 
-.catch-progress .beam-small {
+.bm-catch-progress .bm-beam-small {
   max-width: none;
 }
 
-.catch-progress .progress {
+.bm-catch-progress .bm-progress {
   margin: 8px 0 10px;
 }
 
-.catch-label {
+.bm-catch-label {
   font-size: 15px;
   line-height: 1.5;
   margin: 0;
@@ -456,12 +456,12 @@
 }
 
 /* Room for a two-line hint, so the camera doesn't jump when one appears. */
-.catch-hint {
+.bm-catch-hint {
   min-height: 3em;
   margin-top: 4px;
 }
 
-.catch-notice {
+.bm-catch-notice {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
@@ -469,38 +469,38 @@
   padding: 8px 2px 24px;
 }
 
-.catch-notice h2,
-.sheet h2 {
+.bm-catch-notice h2,
+.bm-sheet h2 {
   font-size: 18px;
   line-height: 1.4;
   margin: 0 0 6px;
 }
 
-.catch-notice p,
-.sheet p {
+.bm-catch-notice p,
+.bm-sheet p {
   margin: 0 0 18px;
   color: var(--quiet);
   font-size: 15px;
   line-height: 1.55;
 }
 
-.notice-buttons {
+.bm-notice-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
-.notice-buttons .btn {
+.bm-notice-buttons .bm-btn {
   min-width: 0;
   padding: 0 12px;
   font-weight: 600;
 }
 
-.notice-buttons .btn:only-child {
+.bm-notice-buttons .bm-btn:only-child {
   grid-column: 1 / -1;
 }
 
-.sheet-cover {
+.bm-sheet-cover {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.55);
@@ -510,7 +510,7 @@
   z-index: 2;
 }
 
-.sheet {
+.bm-sheet {
   width: 100%;
   max-width: 560px;
   background: var(--sheet);
@@ -521,13 +521,13 @@
 }
 
 /* The playground (?play=beam): tabs on top, the screen under them filling the rest. */
-.play-frame {
+.bm-play-frame {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.play-tabs {
+.bm-play-tabs {
   flex: 0 0 auto;
   overflow-x: auto;
   scrollbar-width: none;
@@ -535,13 +535,13 @@
   border-radius: 0;
 }
 
-.play-tabs button {
+.bm-play-tabs button {
   flex: 1 0 auto;
   padding: 0 14px;
   white-space: nowrap;
 }
 
-.play-said {
+.bm-play-said {
   margin: 0;
   padding: 6px 16px;
   font-size: 13px;
@@ -549,7 +549,7 @@
   border-bottom: 1px solid var(--hairline);
 }
 
-.play-screen {
+.bm-play-screen {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;

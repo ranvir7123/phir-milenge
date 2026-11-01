@@ -67,8 +67,8 @@ export function Playground() {
   };
 
   return (
-    <div className="play-frame">
-      <nav className="seg play-tabs" aria-label="Playground views">
+    <div className="bm-play-frame">
+      <nav className="bm-seg bm-play-tabs" aria-label="Playground views">
         {views.map(([v, name]) => (
           <button key={v} type="button" aria-pressed={view === v} onClick={() => show(v)}>
             {name}
@@ -76,7 +76,7 @@ export function Playground() {
         ))}
       </nav>
       {view === 'catch' && (
-        <nav className="seg play-tabs" aria-label="What the stand-in camera sees">
+        <nav className="bm-seg bm-play-tabs" aria-label="What the stand-in camera sees">
           <button type="button" aria-pressed={aim === 'code'} onClick={() => setAim('code')}>
             The code
           </button>
@@ -89,11 +89,11 @@ export function Playground() {
         </nav>
       )}
       {said && (
-        <p className="play-said" role="status">
+        <p className="bm-play-said" role="status">
           {said}
         </p>
       )}
-      <div className="play-screen" key={run}>
+      <div className="bm-play-screen" key={run}>
         {view === 'fountain' && <Fountain />}
         {(view === 'beam' || view === 'broadcast') && (
           <BeamScreen
@@ -131,17 +131,17 @@ function Fountain() {
   };
   const c = catcher.current;
   return (
-    <main className="beam-page">
-      <h1 className="beam-title">Beam playground</h1>
-      <p className="beam-sub">14 KB in 400-byte pieces, 8 a second. The catch below reads the frames straight from the code, dropping every third.</p>
+    <main className="bm-beam-page">
+      <h1 className="bm-beam-title">Beam playground</h1>
+      <p className="bm-beam-sub">14 KB in 400-byte pieces, 8 a second. The catch below reads the frames straight from the code, dropping every third.</p>
       <BeamCode sender={sender} fps={8} maxSize={320} onFrame={onFrame} />
-      <div className="progress">
+      <div className="bm-progress">
         <span style={{ width: `${c.progress * 100}%` }} />
       </div>
-      <p className="beam-line">
+      <p className="bm-beam-line">
         {c.state === 'done' ? `Caught "${c.hello?.title ?? ''}" from ${c.hello?.senderName ?? ''}.` : `Catching, ${Math.floor(c.progress * 100)}%`}
       </p>
-      <dl className="stats">
+      <dl className="bm-stats">
         <dt>Frames seen</dt>
         <dd>{c.stats.seen}</dd>
         <dt>Frames used</dt>
@@ -149,12 +149,12 @@ function Fountain() {
           {c.stats.used} of {sender.pieces} needed
         </dd>
         <dt>Checksum sent</dt>
-        <dd className="checksum">{checksumText(sender.beamId)}</dd>
+        <dd className="bm-checksum">{checksumText(sender.beamId)}</dd>
       </dl>
-      <div className="btn-row">
+      <div className="bm-btn-row">
         <button
           type="button"
-          className="btn"
+          className="bm-btn"
           onClick={() => {
             catcher.current = new BeamCatcher();
             redraw((n) => n + 1);

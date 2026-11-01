@@ -149,10 +149,10 @@ export function CatchScreen({ onCaught, onHello, onCancel, onUseFile, feed }: Ca
   if (phase === 'intro') {
     notice = (
       <Notice title="Phir Milenge needs the camera to catch." body="The camera only reads the code on the other screen. Nothing is recorded or sent anywhere.">
-        <button type="button" className="btn btn-solid" onClick={allowCamera}>
+        <button type="button" className="bm-btn bm-btn-solid" onClick={allowCamera}>
           Allow camera
         </button>
-        <button type="button" className="btn" onClick={onUseFile}>
+        <button type="button" className="bm-btn" onClick={onUseFile}>
           Use a file instead
         </button>
       </Notice>
@@ -164,7 +164,7 @@ export function CatchScreen({ onCaught, onHello, onCancel, onUseFile, feed }: Ca
         title="Their phone has a newer Phir Milenge."
         body="Their beam uses things this version can't read yet. Nothing in your doc was changed. They can still catch from you. Once you have internet, open the link to get the newer version, then catch again."
       >
-        <button type="button" className="btn btn-solid" onClick={onCancel}>
+        <button type="button" className="bm-btn bm-btn-solid" onClick={onCancel}>
           Back to the doc
         </button>
       </Notice>
@@ -172,10 +172,10 @@ export function CatchScreen({ onCaught, onHello, onCancel, onUseFile, feed }: Ca
   } else if (phase === 'damaged') {
     notice = (
       <Notice warning title="This beam came through damaged." body="Nothing was changed. Ask them to beam again.">
-        <button type="button" className="btn btn-solid" onClick={catchAgain}>
+        <button type="button" className="bm-btn bm-btn-solid" onClick={catchAgain}>
           Catch again
         </button>
-        <button type="button" className="btn" onClick={onCancel}>
+        <button type="button" className="bm-btn" onClick={onCancel}>
           Back to the doc
         </button>
       </Notice>
@@ -185,38 +185,38 @@ export function CatchScreen({ onCaught, onHello, onCancel, onUseFile, feed }: Ca
   }
 
   return (
-    <div className="beam-screen catch-screen" onPointerDown={unlockSound}>
-      <div className="catch-column">
-        <button type="button" className="back-link" onClick={() => leave(onCancel)}>
+    <div className="bm-beam-screen" onPointerDown={unlockSound}>
+      <div className="bm-catch-column">
+        <button type="button" className="bm-back-link" onClick={() => leave(onCancel)}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M15 18l-6-6 6-6" />
           </svg>
           Cancel
         </button>
-        <div className="catch-camera">
-          <div className={notice || phase === 'checking' ? 'catch-view hidden' : 'catch-view'}>{cam.view}</div>
+        <div className="bm-catch-camera">
+          <div className={notice || phase === 'checking' ? 'bm-catch-view bm-hidden' : 'bm-catch-view'}>{cam.view}</div>
           {notice}
         </div>
         {!notice && phase !== 'checking' && (
-          <div className="catch-progress">
-            <p className="catch-label">{label}</p>
-            <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label="Caught so far">
+          <div className="bm-catch-progress">
+            <p className="bm-catch-label">{label}</p>
+            <div className="bm-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label="Caught so far">
               <span style={{ width: `${percent}%` }} />
             </div>
-            <p className="beam-small">Keep their screen inside the corners. Pieces can arrive in any order.</p>
-            <p className="beam-small catch-hint" aria-live="polite">
+            <p className="bm-beam-small">Keep their screen inside the corners. Pieces can arrive in any order.</p>
+            <p className="bm-beam-small bm-catch-hint" aria-live="polite">
               {showForeign ? words.foreignCode : showHint ? words.cantRead : ''}
             </p>
           </div>
         )}
       </div>
       {!notice && phase !== 'checking' && (
-        <div className="beam-bar">
-          <button type="button" className={cam.canSwitch ? 'btn' : 'btn span-all'} onClick={() => leave(onUseFile)}>
+        <div className="bm-beam-bar">
+          <button type="button" className={cam.canSwitch ? 'bm-btn' : 'bm-btn bm-span-all'} onClick={() => leave(onUseFile)}>
             Open a file
           </button>
           {cam.canSwitch && (
-            <button type="button" className="btn" onClick={cam.switchCamera}>
+            <button type="button" className="bm-btn" onClick={cam.switchCamera}>
               Switch camera
             </button>
           )}
@@ -224,22 +224,22 @@ export function CatchScreen({ onCaught, onHello, onCancel, onUseFile, feed }: Ca
       )}
       {stuck && !confirmStop && (
         <Sheet title={words.stillCantReadTitle} body={words.stillCantReadBody}>
-          <button type="button" className="btn btn-solid" onClick={() => setWaitingSince(performance.now())}>
+          <button type="button" className="bm-btn bm-btn-solid" onClick={() => setWaitingSince(performance.now())}>
             Keep trying
           </button>
-          <button type="button" className="btn" onClick={() => leave(onUseFile)}>
+          <button type="button" className="bm-btn" onClick={() => leave(onUseFile)}>
             Use a file instead
           </button>
         </Sheet>
       )}
       {confirmStop && (
         <Sheet title="Stop catching?" body={`The ${percent}% caught so far will be lost. Your doc hasn't changed.`}>
-          <button type="button" className="btn btn-solid" onClick={() => setConfirmStop(null)}>
+          <button type="button" className="bm-btn bm-btn-solid" onClick={() => setConfirmStop(null)}>
             Keep catching
           </button>
           <button
             type="button"
-            className="btn"
+            className="bm-btn"
             onClick={() => {
               setConfirmStop(null);
               confirmStop();
@@ -271,10 +271,10 @@ function CameraNotice({
     const body = percent > 0 ? `The ${percent}% caught so far is kept while this screen stays open. ${w.body}` : w.body;
     return (
       <Notice warning={w.warning} title={w.title} body={body}>
-        <button type="button" className="btn btn-solid" onClick={onRetry}>
+        <button type="button" className="bm-btn bm-btn-solid" onClick={onRetry}>
           Carry on
         </button>
-        <button type="button" className="btn" onClick={onCancel}>
+        <button type="button" className="bm-btn" onClick={onCancel}>
           Cancel
         </button>
       </Notice>
@@ -284,19 +284,19 @@ function CameraNotice({
     <Notice warning={w.warning} title={w.title} body={w.body}>
       {w.retry ? (
         <>
-          <button type="button" className="btn btn-solid" onClick={onRetry}>
+          <button type="button" className="bm-btn bm-btn-solid" onClick={onRetry}>
             Try again
           </button>
-          <button type="button" className="btn" onClick={onUseFile}>
+          <button type="button" className="bm-btn" onClick={onUseFile}>
             Use a file instead
           </button>
         </>
       ) : (
         <>
-          <button type="button" className="btn btn-solid" onClick={onUseFile}>
+          <button type="button" className="bm-btn bm-btn-solid" onClick={onUseFile}>
             Use a file instead
           </button>
-          <button type="button" className="btn" onClick={onCancel}>
+          <button type="button" className="bm-btn" onClick={onCancel}>
             Back to the doc
           </button>
         </>
@@ -307,24 +307,24 @@ function CameraNotice({
 
 function Notice({ title, body, warning = false, children }: { title: string; body: string; warning?: boolean; children: ReactNode }) {
   return (
-    <div className="catch-notice" role="alert">
+    <div className="bm-catch-notice" role="alert">
       <h2>
         {warning && <WarnIcon />}
         {title}
       </h2>
       <p>{body}</p>
-      <div className="notice-buttons">{children}</div>
+      <div className="bm-notice-buttons">{children}</div>
     </div>
   );
 }
 
 function Sheet({ title, body, children }: { title: string; body: string; children: ReactNode }) {
   return (
-    <div className="sheet-cover">
-      <div className="sheet" role="dialog" aria-modal="true" aria-label={title}>
+    <div className="bm-sheet-cover">
+      <div className="bm-sheet" role="dialog" aria-modal="true" aria-label={title}>
         <h2>{title}</h2>
         <p>{body}</p>
-        <div className="notice-buttons">{children}</div>
+        <div className="bm-notice-buttons">{children}</div>
       </div>
     </div>
   );

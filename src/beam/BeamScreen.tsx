@@ -22,43 +22,43 @@ export function BeamScreen({ payload, hello, broadcast, estimateSeconds, onStop,
 
   const catchTheirs = broadcast ? undefined : onCatchTheirs;
   const saveFile = broadcast ? undefined : onSaveFile;
-  const goDarkLine = mayGoDark && <p className="beam-small">Tap the screen now and then so it doesn't go dark.</p>;
+  const goDarkLine = mayGoDark && <p className="bm-beam-small">Tap the screen now and then so it doesn't go dark.</p>;
 
   return (
-    <div className={broadcast ? 'beam-screen broadcast' : 'beam-screen'}>
-      <div className="beam-stage">
-        <h1 className="sign">Horn OK Please</h1>
+    <div className={broadcast ? 'bm-beam-screen bm-broadcast' : 'bm-beam-screen'}>
+      <div className="bm-beam-stage">
+        <h1 className="bm-sign">Horn OK Please</h1>
         <BeamCode sender={sender} fps={beamSettings.framesPerSecond} fill />
         {broadcast ? (
           <>
-            <p className="beam-small">{hello.senderName} won't know who caught this until they beam back.</p>
-            <p className="beam-small">Can't catch it from the big screen? Come and catch from the laptop's own screen.</p>
+            <p className="bm-beam-small">{hello.senderName} won't know who caught this until they beam back.</p>
+            <p className="bm-beam-small">Can't catch it from the big screen? Come and catch from the laptop's own screen.</p>
             {goDarkLine}
           </>
         ) : (
           <>
-            <p className="beam-hint">Point their camera here and hold steady until their phone honks.</p>
-            <p className="beam-small">
+            <p className="bm-beam-hint">Point their camera here and hold steady until their phone honks.</p>
+            <p className="bm-beam-small">
               Beaming the whole doc, {sizeText(payload.length)}, about {durationText(estimateSeconds)} once their camera has
               it. The code keeps looping, so they can start catching any time.
             </p>
-            <p className="beam-small">Turn your brightness up so their camera can read it.</p>
+            <p className="bm-beam-small">Turn your brightness up so their camera can read it.</p>
             {goDarkLine}
           </>
         )}
       </div>
-      <div className="beam-bar">
+      <div className="bm-beam-bar">
         {catchTheirs && (
-          <button type="button" className={saveFile ? 'btn' : 'btn span-all'} onClick={catchTheirs}>
+          <button type="button" className={saveFile ? 'bm-btn' : 'bm-btn bm-span-all'} onClick={catchTheirs}>
             Catch theirs
           </button>
         )}
         {saveFile && (
-          <button type="button" className={catchTheirs ? 'btn' : 'btn span-all'} onClick={saveFile}>
+          <button type="button" className={catchTheirs ? 'bm-btn' : 'bm-btn bm-span-all'} onClick={saveFile}>
             Save a file
           </button>
         )}
-        <button type="button" className="btn btn-solid span-all" onClick={onStop}>
+        <button type="button" className="bm-btn bm-btn-solid bm-span-all" onClick={onStop}>
           Stop beaming
         </button>
       </div>

@@ -50,8 +50,8 @@ export function checksumText(n: number): string {
 function Choice<T extends number>({ label, options, value, unit, onPick }: { label: string; options: readonly T[]; value: T; unit: string; onPick(v: T): void }) {
   return (
     <>
-      <span className="beam-label">{label}</span>
-      <div className="seg" role="group" aria-label={label}>
+      <span className="bm-beam-label">{label}</span>
+      <div className="bm-seg" role="group" aria-label={label}>
         {options.map((o) => (
           <button key={o} type="button" aria-pressed={o === value} onClick={() => onPick(o)}>
             {o} {unit}
@@ -81,10 +81,10 @@ function saveRuns(runs: Run[]): void {
 export function BeamTestPage() {
   const [mode, setMode] = useState<'send' | 'receive'>('send');
   return (
-    <main className="beam-page">
-      <h1 className="beam-title">Beam test</h1>
-      <p className="beam-sub">One phone sends, the other receives. Both screens at full brightness, about 20 cm apart.</p>
-      <div className="seg" role="group" aria-label="This device">
+    <main className="bm-beam-page">
+      <h1 className="bm-beam-title">Beam test</h1>
+      <p className="bm-beam-sub">One phone sends, the other receives. Both screens at full brightness, about 20 cm apart.</p>
+      <div className="bm-seg" role="group" aria-label="This device">
         <button type="button" aria-pressed={mode === 'send'} onClick={() => setMode('send')}>
           Send
         </button>
@@ -122,9 +122,9 @@ function SendSide() {
   if (beam) {
     return (
       <section>
-        <p className="beam-line">Point the other camera here and hold steady.</p>
+        <p className="bm-beam-line">Point the other camera here and hold steady.</p>
         <BeamCode sender={beam.sender} fps={beam.fps} maxSize={Math.min(window.innerHeight * 0.62, 560)} onFrame={setFrame} />
-        <dl className="stats">
+        <dl className="bm-stats">
           <dt>Test</dt>
           <dd>{beam.seed}</dd>
           <dt>Settings</dt>
@@ -136,11 +136,11 @@ function SendSide() {
           <dt>Frame</dt>
           <dd>{frame + 1}</dd>
           <dt>Checksum</dt>
-          <dd className="checksum">{checksumText(beam.sender.beamId)}</dd>
+          <dd className="bm-checksum">{checksumText(beam.sender.beamId)}</dd>
         </dl>
-        {!awake && <p className="beam-quiet">Tap the screen now and then so it doesn't go dark.</p>}
-        <div className="btn-row">
-          <button type="button" className="btn btn-wide" onClick={() => setBeam(null)}>
+        {!awake && <p className="bm-beam-quiet">Tap the screen now and then so it doesn't go dark.</p>}
+        <div className="bm-btn-row">
+          <button type="button" className="bm-btn bm-btn-wide" onClick={() => setBeam(null)}>
             Stop beaming
           </button>
         </div>
@@ -153,8 +153,8 @@ function SendSide() {
       <Choice label="Size" options={SIZES} value={kb} unit="KB" onPick={setKb} />
       <Choice label="Piece size" options={PIECES} value={piece} unit="bytes" onPick={setPiece} />
       <Choice label="Frames a second" options={RATES} value={fps} unit="a second" onPick={setFps} />
-      <div className="btn-row">
-        <button type="button" className="btn btn-beam btn-wide" onClick={start}>
+      <div className="bm-btn-row">
+        <button type="button" className="bm-btn bm-btn-beam bm-btn-wide" onClick={start}>
           Start beaming
         </button>
       </div>
@@ -173,12 +173,12 @@ function ReceiveSide() {
         <Receiver bundledOnly={bundledOnly} onRun={(run) => setRuns((r) => { const next = [run, ...r]; saveRuns(next); return next; })} />
       ) : (
         <>
-          <label className="check-row">
+          <label className="bm-check-row">
             <input type="checkbox" checked={bundledOnly} onChange={(e) => setBundledOnly(e.target.checked)} />
             Use the bundled reader even if the browser has its own
           </label>
-          <div className="btn-row">
-            <button type="button" className="btn btn-wide" onClick={() => setOn(true)}>
+          <div className="bm-btn-row">
+            <button type="button" className="bm-btn bm-btn-wide" onClick={() => setOn(true)}>
               Start the camera
             </button>
           </div>
@@ -186,9 +186,9 @@ function ReceiveSide() {
       )}
       {runs.length > 0 && (
         <>
-          <span className="beam-label">Runs on this device</span>
-          <div className="runs-box">
-            <table className="runs">
+          <span className="bm-beam-label">Runs on this device</span>
+          <div className="bm-runs-box">
+            <table className="bm-runs">
               <thead>
                 <tr>
                   <th>Time</th>
@@ -216,17 +216,17 @@ function ReceiveSide() {
                     <td>
                       {r.used} of {r.needed}
                     </td>
-                    <td className={r.match === 'differ' ? 'beam-warning' : undefined}>{r.match === 'exact' ? 'match' : r.match === 'checksum' ? 'checksum ok' : 'DIFFER'}</td>
+                    <td className={r.match === 'differ' ? 'bm-beam-warning' : undefined}>{r.match === 'exact' ? 'match' : r.match === 'checksum' ? 'checksum ok' : 'DIFFER'}</td>
                     <td>{r.reader}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="btn-row">
+          <div className="bm-btn-row">
             <button
               type="button"
-              className="btn"
+              className="bm-btn"
               onClick={() => {
                 const lines = runs.map((r) => `${r.at} | ${r.kb} KB | ${r.piece} | ${r.fps ?? '?'}/s | ${r.seconds.toFixed(1)} s | ${r.kbps.toFixed(1)} KB/s | seen ${r.seen} | used ${r.used} of ${r.needed} | ${r.match} | ${r.reader}`);
                 void navigator.clipboard?.writeText(lines.join('\n')).then(() => setCopied(true), () => setCopied(false));
@@ -234,7 +234,7 @@ function ReceiveSide() {
             >
               {copied ? 'Copied' : 'Copy the runs'}
             </button>
-            <button type="button" className="btn" onClick={() => { setRuns([]); saveRuns([]); }}>
+            <button type="button" className="bm-btn" onClick={() => { setRuns([]); saveRuns([]); }}>
               Clear the runs
             </button>
           </div>
@@ -314,15 +314,15 @@ function Receiver({ bundledOnly, onRun }: { bundledOnly: boolean; onRun(run: Run
   return (
     <section>
       {camera.kind === 'problem' ? (
-        <div className="notice">
-          <h2 className={cameraWords[camera.problem].warning ? 'beam-warning' : undefined}>
+        <div className="bm-notice">
+          <h2 className={cameraWords[camera.problem].warning ? 'bm-beam-warning' : undefined}>
             {cameraWords[camera.problem].warning && <WarnIcon />}
             {cameraWords[camera.problem].title}
           </h2>
           <p>{cameraWords[camera.problem].body}</p>
           {cameraWords[camera.problem].retry && (
-            <div className="btn-row">
-              <button type="button" className="btn" onClick={cam.retry}>
+            <div className="bm-btn-row">
+              <button type="button" className="bm-btn" onClick={cam.retry}>
                 {camera.problem === 'stopped' || camera.problem === 'other' ? 'Carry on' : 'Try again'}
               </button>
             </div>
@@ -332,17 +332,17 @@ function Receiver({ bundledOnly, onRun }: { bundledOnly: boolean; onRun(run: Run
         cam.view
       )}
 
-      {c.state === 'looking' && camera.kind !== 'problem' && <p className="beam-line">{camera.kind === 'starting' ? 'Starting the camera…' : 'Looking for a code. Point at the other screen.'}</p>}
+      {c.state === 'looking' && camera.kind !== 'problem' && <p className="bm-beam-line">{camera.kind === 'starting' ? 'Starting the camera…' : 'Looking for a code. Point at the other screen.'}</p>}
       {c.state !== 'looking' && (
         <>
-          <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(c.progress * 100)}>
+          <div className="bm-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(c.progress * 100)}>
             <span style={{ width: `${c.progress * 100}%` }} />
           </div>
-          <p className="beam-line">
+          <p className="bm-beam-line">
             {c.state === 'catching' && `Catching${c.hello ? ` test ${c.hello.title.replace('Beam test ', '')}` : ''}, ${Math.floor(c.progress * 100)}%`}
             {c.state === 'done' && run && `Caught ${run.kb} KB in ${run.seconds.toFixed(1)} seconds: ${run.kbps.toFixed(1)} KB a second.`}
             {c.state === 'damaged' && (
-              <span className="beam-warning">
+              <span className="bm-beam-warning">
                 <WarnIcon />
                 This beam came through damaged.
               </span>
@@ -350,17 +350,17 @@ function Receiver({ bundledOnly, onRun }: { bundledOnly: boolean; onRun(run: Run
           </p>
         </>
       )}
-      {foreign && <p className="beam-quiet">{words.foreignCode}</p>}
+      {foreign && <p className="bm-beam-quiet">{words.foreignCode}</p>}
       {stuck >= 15 ? (
-        <p className="beam-quiet">
+        <p className="bm-beam-quiet">
           {words.stillCantReadTitle} {words.stillCantReadBody}
         </p>
       ) : stuck >= 3 ? (
-        <p className="beam-quiet">{words.cantRead}</p>
+        <p className="bm-beam-quiet">{words.cantRead}</p>
       ) : null}
 
       {run && (
-        <p className={`beam-line ${run.match === 'differ' ? 'beam-warning' : ''}`}>
+        <p className={`beam-line ${run.match === 'differ' ? 'bm-beam-warning' : ''}`}>
           {run.match === 'exact' && 'Bytes match exactly.'}
           {run.match === 'checksum' && 'Checksum matches.'}
           {run.match === 'differ' && (
@@ -372,7 +372,7 @@ function Receiver({ bundledOnly, onRun }: { bundledOnly: boolean; onRun(run: Run
         </p>
       )}
 
-      <dl className="stats">
+      <dl className="bm-stats">
         <dt>Reader</dt>
         <dd>{camera.kind === 'on' ? (camera.reader === 'built-in' ? 'built into the browser' : 'bundled (ZXing)') : '…'}</dd>
         <dt>Codes read a second</dt>
@@ -393,19 +393,19 @@ function Receiver({ bundledOnly, onRun }: { bundledOnly: boolean; onRun(run: Run
         {c.state === 'done' && c.payload && (
           <>
             <dt>Checksum</dt>
-            <dd className="checksum">{checksumText(crc32(c.payload))}</dd>
+            <dd className="bm-checksum">{checksumText(crc32(c.payload))}</dd>
           </>
         )}
       </dl>
 
-      <div className="btn-row">
+      <div className="bm-btn-row">
         {c.state !== 'looking' && (
-          <button type="button" className="btn btn-wide" onClick={again}>
+          <button type="button" className="bm-btn bm-btn-wide" onClick={again}>
             Catch again
           </button>
         )}
         {cam.canSwitch && (
-          <button type="button" className="btn btn-wide" onClick={cam.switchCamera}>
+          <button type="button" className="bm-btn bm-btn-wide" onClick={cam.switchCamera}>
             Switch camera
           </button>
         )}

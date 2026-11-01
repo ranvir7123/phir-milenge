@@ -61,8 +61,8 @@ export function BeamCode({
   }, [sender, fps, room, maxSize]);
 
   return (
-    <div ref={box} className={fill ? 'beam-code-box fill' : 'beam-code-box'}>
-      <canvas ref={canvas} className="beam-code" aria-label="The moving code" />
+    <div ref={box} className={fill ? 'bm-beam-code-box bm-fill' : 'bm-beam-code-box'}>
+      <canvas ref={canvas} className="bm-beam-code" aria-label="The moving code" />
     </div>
   );
 }
@@ -140,12 +140,12 @@ export function useCamera({
   };
 
   const view = (
-    <div className="camera-box">
-      <video ref={video} className="camera-video" playsInline muted autoPlay />
-      <span className="corner tl" />
-      <span className="corner tr" />
-      <span className="corner bl" />
-      <span className="corner br" />
+    <div className="bm-camera-box">
+      <video ref={video} className="bm-camera-video" playsInline muted autoPlay />
+      <span className="bm-corner bm-tl" />
+      <span className="bm-corner bm-tr" />
+      <span className="bm-corner bm-bl" />
+      <span className="bm-corner bm-br" />
     </div>
   );
 
@@ -160,7 +160,7 @@ function currentDeviceId(video: HTMLVideoElement | null): string | undefined {
 /** The warning triangle, always followed by its words. */
 export function WarnIcon() {
   return (
-    <svg className="warn-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className="bm-warn-icon" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 3 2 21h20L12 3Z" fill="none" stroke="var(--warning)" strokeWidth="2" strokeLinejoin="round" />
       <path d="M12 10v5" stroke="var(--warning)" strokeWidth="2" strokeLinecap="round" />
       <circle cx="12" cy="18" r="1.2" fill="var(--warning)" />
