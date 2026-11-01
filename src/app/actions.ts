@@ -663,15 +663,17 @@ async function takeIn(items: Incoming[], from: { actor: string | null; via: 'bea
       await saveRow(session.engine, true);
       const fromName = nameFrom(session.view, from, senderName, fileCount, result);
       refresh({ savedAt: Date.now(), notSaved: false });
-      if (result.newEdits.length === 0) {
+      // A beam with nothing new goes to the Caught screen: "Already caught up with Rina. Phir milenge.", or
+      // "Nothing new from Rina" with Beam back when Rina is behind.
+      if (result.newEdits.length === 0 && from.via === 'file') {
         set({
           screen: { kind: 'doc' },
           sheet: {
             kind: 'message',
             message: {
               warn: false,
-              title: from.via === 'file' ? 'Already caught up with this file.' : `Already caught up with ${senderName || 'them'}.`,
-              body: from.via === 'file' ? 'Everything in it is already in your doc.' : 'Everything they have is already in your doc.',
+              title: 'Already caught up with this file.',
+              body: 'Everything in it is already in your doc.',
               actions: [{ label: 'Back to the doc', style: 'main', run: () => set({ sheet: null }) }],
             },
           },
