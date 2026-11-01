@@ -8,7 +8,7 @@ import { blockOfKey, clashParts, fieldIndex, settleName } from './fields';
 import { agoForm, colourName, colourOf, cutName, nameOf, plural } from './format';
 import { intents } from './engineLink';
 import { caughtUp, writerRows } from './knowledge';
-import { messageWithoutName, ruleDef, ruleName, sortedRules } from './rules';
+import { brokenDetail, ruleDef, ruleName, sortedRules } from './rules';
 import { AlertIcon, LeftIcon, PairIcon, RightIcon, ShieldIcon } from './icons';
 import { TruckBack } from './TruckBack';
 import { WhoHas } from './WhoHas';
@@ -109,7 +109,7 @@ export function SidePanel(props: SidePanelProps) {
               <button key={r.id} type="button" className="pn-flag pn-flag-bad" onClick={() => block && onJump(block)} disabled={!block}>
                 <AlertIcon />
                 <div>
-                  <b>Rule broken: {name.toLowerCase()}.</b> {msg ? messageWithoutName(msg.message, name) : ''}
+                  <b>Rule broken: {name.toLowerCase()}.</b> {brokenDetail(r, view)}
                 </div>
               </button>
             );
@@ -166,7 +166,7 @@ export function SidePanel(props: SidePanelProps) {
                 <AlertIcon />
                 <div className="pn-rule-body">
                   <span className="pn-rule-name">{name}</span>
-                  <span className="pn-rule-sub">{messageWithoutName(r.result.message, name)}</span>
+                  <span className="pn-rule-sub">{brokenDetail(r, view)}</span>
                 </div>
               </div>
             );

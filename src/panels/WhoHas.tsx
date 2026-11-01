@@ -13,13 +13,14 @@ const TRAIL_ROWS = 6;
 export function trailLine(row: TrailRow, view: DocView, now: number): string {
   const who = cutName(nameOf(view, row.actor));
   const at = row.place ? ` at ${row.place}` : '';
-  if (row.via === 'wrote') return `${who} wrote it${at} · ${row.t !== null ? clockForm(row.t, now) : ''}`;
   const device = deviceName(who);
+  // A phone with these words but not the whole paragraph, which "3 of 4 have it" doesn't count.
+  if (row.via === 'wrote') return `${who} wrote it${at} · ${row.t !== null ? clockForm(row.t, now) : ''}${row.partial ? ` · ${device} doesn't have all of it yet` : ''}`;
   const where = row.place ? `${device}, ${row.place}` : device;
   if (row.via === 'not-yet') return `${where} · Not yet, as far as this phone knows`;
   const from = row.from ? deviceName(cutName(nameOf(view, row.from))) : null;
   const how = row.via === 'file' ? (from ? `, by file from ${from}` : ', by file') : from ? `, from ${from}` : '';
-  return `${where} · ${row.t !== null ? clockForm(row.t, now) : ''}${how}`;
+  return `${where} · ${row.t !== null ? clockForm(row.t, now) : ''}${how}${row.partial ? " · Doesn't have all of it yet" : ''}`;
 }
 
 export function WhoHas({ engine, view, block, bigScreen }: { engine: DocEngine; view: DocView; block: ItemId; bigScreen: boolean }) {
@@ -66,7 +67,7 @@ export function WhoHas({ engine, view, block, bigScreen }: { engine: DocEngine; 
           {shown.length === 0 && <p className="pn-small pn-quiet">This phone hasn't seen it travel yet.</p>}
           <ol style={{ margin: 0, paddingLeft: '1.4em', display: 'flex', flexDirection: 'column', gap: 4 }} className="pn-small">
             {shown.map((r, i) => (
-              <li key={`${r.actor}-${i}`} className={r.via === 'not-yet' ? 'pn-quiet' : undefined}>
+              <li key={`${r.actor}-${i}`} className={r.via === 'not-yet' || r.partial ? 'pn-quiet' : undefined}>
                 {trailLine(r, view, now)}
               </li>
             ))}

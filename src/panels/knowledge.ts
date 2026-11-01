@@ -148,6 +148,8 @@ export interface TrailRow {
   /** Who it came from, for beam and file steps. */
   from: ActorId | null;
   place?: string;
+  /** It got these words but not all of the paragraph as this phone shows it, so "3 of 4 have it" doesn't count it. */
+  partial?: boolean;
 }
 
 /** Each device's place, from its newest change or note that has one. */
@@ -163,22 +165,25 @@ export function places(changes: readonly Change[]): Map<ActorId, string> {
 
 /**
  * "Where this has been": the engine's trail for a block, with where each phone caught it from, then every device
- * that doesn't hold it yet, as far as this phone knows.
+ * that doesn't hold it yet, as far as this phone knows. The trail follows the newest words, but "3 of 4 have it"
+ * counts phones holding the whole paragraph, so a phone with the newest words and not the rest is marked.
  */
 export function trailRows(engine: DocEngine, view: DocView, block: string): TrailRow[] {
   const changes = engine.changes();
   const placeOf = places(changes);
   const notes = changes.filter((c) => c.kind === 'note');
+  const holders = new Set<ActorId>([...engine.whoHas(block), engine.me]);
   const rows: TrailRow[] = engine.trail(block).map((s) => {
     let from: ActorId | null = null;
     if (s.via !== 'wrote') {
       const note = notes.find((n) => n.actor === s.actor && n.t === s.t) ?? notes.find((n) => n.actor === s.actor);
       from = note?.from?.actor ?? null;
     }
-    return { actor: s.actor, t: s.t, via: s.via, from, place: placeOf.get(s.actor) };
+    const row: TrailRow = { actor: s.actor, t: s.t, via: s.via, from, place: placeOf.get(s.actor) };
+    return holders.has(s.actor) ? row : { ...row, partial: true };
   });
   const listed = new Set(rows.map((r) => r.actor));
-  for (const a of engine.whoHas(block)) listed.add(a);
+  for (const a of holders) listed.add(a);
   for (const a of devices(changes, view)) {
     if (listed.has(a)) continue;
     rows.push({ actor: a, t: null, via: 'not-yet', from: null, place: placeOf.get(a) });
