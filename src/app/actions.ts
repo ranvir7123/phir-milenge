@@ -361,6 +361,10 @@ export function openSelfTest(): void {
   set({ screen: { kind: 'self-test' }, sheet: null });
 }
 
+export function openAddRule(): void {
+  set({ screen: { kind: 'add-rule' }, sheet: null });
+}
+
 export function backToDoc(): void {
   set({ screen: get().session ? { kind: 'doc' } : { kind: 'home' }, sheet: null });
 }

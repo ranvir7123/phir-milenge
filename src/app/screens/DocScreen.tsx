@@ -78,6 +78,7 @@ export function DocScreen({ layout, session, me, bigScreen, notice, onBigScreen 
     else if (what === 'beam') act.startBeam(bigScreen && laptop);
     else if (what === 'catch') act.startCatch();
     else if (what === 'menu') setLocal('menu');
+    else if (what === 'add-rule') act.openAddRule();
     else openPanel();
   };
 
@@ -85,6 +86,7 @@ export function DocScreen({ layout, session, me, bigScreen, notice, onBigScreen 
     setLocal(null);
     if (what === 'replay') act.openReplay();
     else if (what === 'self-test') act.openSelfTest();
+    else if (what === 'add-rule') act.openAddRule();
     else if (what === 'beam') act.startBeam(bigScreen && laptop);
     else if (what === 'catch') act.startCatch();
   };

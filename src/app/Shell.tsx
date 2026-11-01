@@ -4,7 +4,7 @@ import * as act from './actions';
 import { freeColours } from './actions';
 import { useLayout, useNow } from './layout';
 import { reloadForUpdate, startOffline } from './offline';
-import { BeamScreen, CatchScreen, CaughtScreen, ReplayView, SelfTestView } from './pieces';
+import { AddRule, BeamScreen, CatchScreen, CaughtScreen, ReplayView, SelfTestView } from './pieces';
 import { useApp } from './state';
 import { ColourScreen } from './screens/ColourScreen';
 import { DocScreen } from './screens/DocScreen';
@@ -168,6 +168,13 @@ export function Shell() {
       body = docProps && (
         <div className="piece-screen">
           <SelfTestView {...docProps} onClose={act.backToDoc} />
+        </div>
+      );
+      break;
+    case 'add-rule':
+      body = docProps && (
+        <div className="piece-screen">
+          <AddRule {...docProps} onClose={act.backToDoc} />
         </div>
       );
       break;

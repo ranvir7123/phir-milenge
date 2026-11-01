@@ -54,7 +54,8 @@ export type Screen =
   | { kind: 'caught'; result: ReceiveResult; fromName: string; via: 'beam' | 'file' }
   | { kind: 'first-catch'; fromName: string; via: 'beam' | 'file'; writers: number }
   | { kind: 'replay' }
-  | { kind: 'self-test' };
+  | { kind: 'self-test' }
+  | { kind: 'add-rule' };
 
 export type Sheet =
   | { kind: 'new-doc' }
