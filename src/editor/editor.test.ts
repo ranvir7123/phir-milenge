@@ -3,9 +3,10 @@
 import { describe, expect, test } from 'vitest';
 import { getSchema } from '@tiptap/core';
 import type { Node as PMNode } from '@tiptap/pm/model';
+import { EditorState, TextSelection } from '@tiptap/pm/state';
 import type { BlockView, DocView } from '../contracts';
 import { intents, openDoc } from '../model';
-import { buildOps } from './Editor';
+import { buildOps, syncPage } from './Editor';
 import { CLASH_MARK, readBlock, viewEngineText, viewToJSON } from './model';
 import { makeExtensions, type Bridge } from './schema';
 import { ruleWarning } from './rules';
@@ -99,6 +100,26 @@ describe('editor to engine', () => {
     a.commit(ops, at());
     expect(blockOf(a.view(), block).marks.map((m) => [m.type, m.quote])).toEqual([['bold', 'Two.']]);
     expect(buildOps(a.view(), docOf(a.view()), schema).ops).toEqual([]);
+  });
+});
+
+describe('engine to editor', () => {
+  test('turning a line into a checklist keeps the cursor on it, not at the start of the next line', () => {
+    const { a, block } = start('Rice.');
+    a.commit(intents.insertBlock(a.view(), block, { kind: 'p' }, 'Next line.').ops, at());
+    // The cursor sits at the end of "Rice." and the Checklist button is pressed.
+    const doc = docOf(a.view());
+    let pos = -1;
+    doc.forEach((n, p) => {
+      if (n.attrs.id === block) pos = p;
+    });
+    const before = EditorState.create({ doc, selection: TextSelection.create(doc, pos + 1 + 'Rice.'.length) });
+    const pressed = before.apply(before.tr.setNodeMarkup(pos, undefined, { ...doc.nodeAt(pos)!.attrs, kind: 'li', list: 'check' }));
+    a.commit(buildOps(a.view(), pressed.doc, schema).ops, at());
+    // The engine's view comes back with the new tick and the page is brought in line with it.
+    const after = pressed.apply(syncPage(pressed, docOf(a.view())));
+    expect(after.selection.$head.parent.attrs.id).toBe(block);
+    expect(after.selection.$head.parentOffset).toBe('Rice.'.length);
   });
 });
 

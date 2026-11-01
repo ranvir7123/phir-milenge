@@ -143,8 +143,6 @@
 
 .ed-menu {
   position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
   z-index: 30;
   min-width: 240px;
   padding: 6px;

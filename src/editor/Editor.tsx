@@ -7,7 +7,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, u
 import { createPortal } from 'react-dom';
 import { EditorContent, useEditor, type Editor as TiptapEditor } from '@tiptap/react';
 import type { Node as PMNode, Schema } from '@tiptap/pm/model';
-import { TextSelection } from '@tiptap/pm/state';
+import { TextSelection, type EditorState, type Transaction } from '@tiptap/pm/state';
 import type { Decoration } from '@tiptap/pm/view';
 import type { BlockView, DocView, EditorProps, Field, ItemId, Lane, Op } from '../contracts';
 import { engine as model } from '../model';
@@ -117,6 +117,58 @@ export function buildOps(base: DocView, doc: PMNode, schema: Schema): { ops: Op[
   });
   for (const b of base.blocks) if (!seen.has(b.id) && b.style.kind !== 'table') ops.push(...I.deleteBlock(base, b.id));
   return { ops, newIds };
+}
+
+type Spot = { id: string; offset: number } | null;
+
+/** A cursor position as its line's id and how far along the line it sits. */
+function spotOf(doc: PMNode, pos: number): Spot {
+  const $pos = doc.resolve(pos);
+  const id = $pos.depth === 1 ? $pos.parent.attrs.id : null;
+  return id ? { id: String(id), offset: $pos.parentOffset } : null;
+}
+
+/** `pos` if it is still on the line it was on; otherwise the same place on that line, found by its id. */
+function backOnLine(doc: PMNode, pos: number, was: Spot): number {
+  if (!was) return pos;
+  const $pos = doc.resolve(pos);
+  if ($pos.depth === 1 && $pos.parent.attrs.id === was.id) return pos;
+  let found = pos;
+  doc.forEach((node, at) => {
+    if (node.isTextblock && node.attrs.id === was.id) found = at + 1 + Math.min(was.offset, node.content.size);
+  });
+  return found;
+}
+
+/**
+ * Brings the page in line with the engine's doc: only the part that differs is replaced. A line the engine
+ * redraws whole (a new tick box, a list number) would push the cursor to the start of the next line, so a
+ * cursor that leaves its line is put back where it was on it.
+ */
+export function syncPage(state: EditorState, desired: PMNode): Transaction {
+  const doc = state.doc;
+  const tr = state.tr;
+  const start = doc.content.findDiffStart(desired.content);
+  if (start == null) return tr;
+  const end = doc.content.findDiffEnd(desired.content);
+  let endA = end?.a ?? doc.content.size;
+  let endB = end?.b ?? desired.content.size;
+  const overlap = start - Math.min(endA, endB);
+  if (overlap > 0) {
+    endA += overlap;
+    endB += overlap;
+  }
+  try {
+    tr.replace(start, endA, desired.slice(start, endB));
+  } catch {
+    tr.replaceWith(0, doc.content.size, desired.content);
+  }
+  if (state.selection instanceof TextSelection) {
+    const anchor = backOnLine(tr.doc, tr.selection.anchor, spotOf(doc, state.selection.anchor));
+    const head = backOnLine(tr.doc, tr.selection.head, spotOf(doc, state.selection.head));
+    if (anchor !== tr.selection.anchor || head !== tr.selection.head) tr.setSelection(TextSelection.create(tr.doc, anchor, head));
+  }
+  return tr;
 }
 
 /** Where a sentence ends inside its block, counting each sentence with two versions as one place. */
@@ -363,25 +415,7 @@ export function Editor(props: EditorProps) {
       // Our own typing just became a change: the view that change makes is on its way.
       if (props.engine.changes().length !== committedBefore) return;
     }
-    const desired = ed.schema.nodeFromJSON(viewToJSON(props.view, { lanes }));
-    const doc = ed.state.doc;
-    const tr = ed.state.tr;
-    const start = doc.content.findDiffStart(desired.content);
-    if (start != null) {
-      const end = doc.content.findDiffEnd(desired.content);
-      let endA = end?.a ?? doc.content.size;
-      let endB = end?.b ?? desired.content.size;
-      const overlap = start - Math.min(endA, endB);
-      if (overlap > 0) {
-        endA += overlap;
-        endB += overlap;
-      }
-      try {
-        tr.replace(start, endA, desired.slice(start, endB));
-      } catch {
-        tr.replaceWith(0, doc.content.size, desired.content);
-      }
-    }
+    const tr = syncPage(ed.state, ed.schema.nodeFromJSON(viewToJSON(props.view, { lanes })));
     baseRef.current = props.view;
     tr.setMeta(engineMeta, true).setMeta('addToHistory', false);
     const want = pendingCursorRef.current;

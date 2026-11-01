@@ -1,7 +1,8 @@
 // The phone toolbar (Undo | Redo | Normal ▾ | Bold | Insert | Replay) and the laptop toolbar, in the
 // order docs/plan/2-user-experience.md gives. Buttons never take the cursor out of the doc.
 
-import { useEffect, useReducer, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useReducer, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import type { Editor as TiptapEditor } from '@tiptap/react';
 import { Icon, type IconName } from './icons';
 import { currentBlock, LIST_NAMES, setStyle, STYLE_NAMES, toggleList, toggleMark, type TextStyle } from './commands';
@@ -124,44 +125,81 @@ export function Toolbar({ editor, layout, disabled, onUndo, onRedo, onSheet, onO
   );
 }
 
+// The menu is drawn on the editor itself, under its button: inside the toolbar, which scrolls sideways,
+// it would be cut off.
+type MenuAt = { host: HTMLElement; top: number; left: number };
+
 function StyleMenu({ editor, style, disabled, onBlocked }: { editor: TiptapEditor; style: TextStyle; disabled: boolean; onBlocked(): void }) {
-  const [open, setOpen] = useState(false);
+  const [at, setAt] = useState<MenuAt | null>(null);
   const wrap = useRef<HTMLDivElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
+  const toggle = () => {
+    if (disabled) return onBlocked();
+    if (at) return setAt(null);
+    const host = wrap.current?.closest<HTMLElement>('.ed');
+    if (!wrap.current || !host) return;
+    const button = wrap.current.getBoundingClientRect();
+    const box = host.getBoundingClientRect();
+    setAt({ host, top: button.bottom - box.top + 4, left: button.left - box.left });
+  };
+  useLayoutEffect(() => {
+    // Kept inside the editor's right edge.
+    const m = menu.current;
+    if (!m || !at) return;
+    const over = m.getBoundingClientRect().right - (at.host.getBoundingClientRect().right - 8);
+    if (over > 0) m.style.left = `${Math.max(8, at.left - over)}px`;
+  }, [at]);
   useEffect(() => {
-    if (!open) return;
-    const close = (e: MouseEvent) => {
-      if (!wrap.current?.contains(e.target as Node)) setOpen(false);
+    if (!at) return;
+    const close = () => setAt(null);
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (!wrap.current?.contains(t) && !menu.current?.contains(t)) close();
     };
-    window.addEventListener('mousedown', close);
-    return () => window.removeEventListener('mousedown', close);
-  }, [open]);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+    const bar = wrap.current?.parentElement;
+    window.addEventListener('mousedown', onDown);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('resize', close);
+    bar?.addEventListener('scroll', close);
+    return () => {
+      window.removeEventListener('mousedown', onDown);
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', close);
+      bar?.removeEventListener('scroll', close);
+    };
+  }, [at]);
   return (
     <div className="ed-menu-wrap" ref={wrap}>
-      <Tool label={`Text style: ${STYLE_NAMES[style].long}`} className="ed-style ed-style-wide" onPress={() => (disabled ? onBlocked() : setOpen((o) => !o))}>
+      <Tool label={`Text style: ${STYLE_NAMES[style].long}`} className="ed-style ed-style-wide" onPress={toggle}>
         <span>{STYLE_NAMES[style].long}</span>
         <Icon name="down" className="ed-caret" />
       </Tool>
-      {open && (
-        <div className="ed-menu" role="menu">
-          {(Object.keys(STYLE_NAMES) as TextStyle[]).map((s) => (
-            <button
-              key={s}
-              type="button"
-              role="menuitemradio"
-              aria-checked={s === style}
-              className={`ed-menu-item st-${s}${s === style ? ' is-on' : ''}`}
-              title={`${STYLE_NAMES[s].long} (${STYLE_NAMES[s].keys})`}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => {
-                setStyle(editor, s);
-                setOpen(false);
-              }}
-            >
-              {STYLE_NAMES[s].long}
-            </button>
-          ))}
-        </div>
-      )}
+      {at &&
+        createPortal(
+          <div className="ed-menu" role="menu" ref={menu} style={{ top: at.top, left: at.left }}>
+            {(Object.keys(STYLE_NAMES) as TextStyle[]).map((s) => (
+              <button
+                key={s}
+                type="button"
+                role="menuitemradio"
+                aria-checked={s === style}
+                className={`ed-menu-item st-${s}${s === style ? ' is-on' : ''}`}
+                title={`${STYLE_NAMES[s].long} (${STYLE_NAMES[s].keys})`}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  setStyle(editor, s);
+                  setAt(null);
+                }}
+              >
+                {STYLE_NAMES[s].long}
+              </button>
+            ))}
+          </div>,
+          at.host,
+        )}
     </div>
   );
 }
