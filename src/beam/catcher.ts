@@ -41,6 +41,12 @@ export interface CatchStats {
 /** Frames in a row from another beam before we follow it (a sender who started a new beam). */
 const SWITCH_AFTER = 4;
 
+// Limits on what a frame may claim, so a made-up code can't make the phone reserve huge amounts of memory.
+// One QR code holds under 3,000 bytes, and a beam over 16 MB would take hours.
+const MAX_PIECE = 2900;
+const MAX_SIZE = 16 * 1024 * 1024;
+const MAX_PIECES = 20000;
+
 export class BeamCatcher {
   private decoder: FountainDecoder | null = null;
   private key = '';
@@ -85,7 +91,16 @@ export class BeamCatcher {
     const frame = decodeFrame(bytes);
     if (!frame.ok) return { type: frame.reason === 'newer' ? 'newer' : 'misread' };
     const { header, body } = frame;
-    if (header.pieceSize === 0 || (header.kind !== KIND_DATA && header.kind !== KIND_HELLO)) return { type: 'misread' };
+    if (
+      (header.kind !== KIND_DATA && header.kind !== KIND_HELLO) ||
+      header.pieceSize < 1 ||
+      header.pieceSize > MAX_PIECE ||
+      header.size > MAX_SIZE ||
+      Math.ceil(header.size / header.pieceSize) > MAX_PIECES ||
+      (header.kind === KIND_DATA && body.length !== header.pieceSize)
+    ) {
+      return { type: 'misread' };
+    }
 
     const key = `${header.beamId}:${header.size}:${header.pieceSize}`;
     let restarted = false;

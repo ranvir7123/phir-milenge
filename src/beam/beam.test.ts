@@ -237,6 +237,15 @@ describe('sender and catcher', () => {
     expect(catcher.state).toBe('looking');
   });
 
+  it('refuses frames that claim a size no beam could have', () => {
+    const catcher = new BeamCatcher();
+    const huge = { kind: 0, beamId: 1, size: 0xffffffff, pieceSize: 1, number: 0, spare: 0 };
+    expect(catcher.read(frameToText(encodeFrame(huge, new Uint8Array(1))), 0).type).toBe('misread');
+    const wrongBody = { kind: 0, beamId: 1, size: 1000, pieceSize: 400, number: 0, spare: 0 };
+    expect(catcher.read(frameToText(encodeFrame(wrongBody, new Uint8Array(10))), 0).type).toBe('misread');
+    expect(catcher.state).toBe('looking');
+  });
+
   it('follows the sender to a new beam', () => {
     const a = new BeamSender(new Uint8Array(4000).fill(1), 400, hello);
     const b = new BeamSender(new Uint8Array(4000).fill(2), 400, hello);
