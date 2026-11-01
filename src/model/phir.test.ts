@@ -4,7 +4,7 @@ import { zlibSync, strToU8 } from 'fflate';
 import type { Change } from '../contracts';
 import { Engine } from './engine';
 import { intents } from './intents';
-import { decodePhir, encodePhir } from './phir';
+import { decodePhir, encodePhir, MAX_UNPACKED, readPhir } from './phir';
 
 const DOC = 'd0c0d0c0d0c0d0c0d0c0d0c0d0c0d0c0';
 const A = 'aaaaaaaaaaaaaaaa';
@@ -87,6 +87,16 @@ describe('the .phir file', () => {
     const bad = { id: `${A}:1`, actor: A, seq: 1, deps: [], t: 1, kind: 'edit', ops: [null] };
     expect(decodePhir(pack({ docId: DOC, title: 'T', changes: [bad] }))).toMatchObject({ ok: false, reason: 'damaged' });
     expect(decodePhir(withHeader(1, strToU8('{"not":"compressed"}')))).toMatchObject({ ok: false, reason: 'damaged' });
+  });
+
+  test('a small file that would unpack to something huge is stopped early, as damaged', () => {
+    const huge = new Uint8Array(3_000_000).fill(0x20); // 3 MB of spaces squeezes to a few KB
+    const bomb = withHeader(1, zlibSync(huge, { level: 9 }));
+    expect(bomb.length).toBeLessThan(10_000);
+    expect(readPhir(bomb, 1_000_000)).toMatchObject({ ok: false, reason: 'damaged', format: 1 });
+    const doc = sampleDoc();
+    expect(readPhir(encodePhir(doc), 1_000_000)).toMatchObject({ ok: true, changes: doc.changes });
+    expect(MAX_UNPACKED).toBeGreaterThanOrEqual(32_000_000);
   });
 
   test('a squeezed doc is much smaller than its JSON', () => {
