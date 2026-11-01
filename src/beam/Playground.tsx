@@ -1,27 +1,127 @@
 // Track B shows its piece here with made-up data (src/contracts/fixtures.ts). Open with ?play=beam
-// A beam of a made-up payload on the left, caught with no camera on the right (every third frame dropped),
-// so the fountain can be watched working: any order, any start, the exact bytes back.
+// Five views: the fountain caught with no camera (every third frame dropped), the Beam screen, the
+// broadcast Beam screen, and the Catch screen fed straight from the frames or from the real camera.
 
 import { useMemo, useRef, useState } from 'react';
+import type { BeamHello } from '../contracts';
 import { BeamCatcher } from './catcher';
 import { BeamCode } from './parts';
+import { BeamScreen } from './BeamScreen';
+import { CatchScreen, type CodeFeed } from './CatchScreen';
 import { BeamSender } from './sender';
+import { beamSeconds, beamSettings } from './settings';
 import { checksumText, testPayload } from './BeamTestPage';
 import './beam.css';
 
+const SIZE = 14 * 1024;
+const payload = testPayload(4471, SIZE);
+const hello: BeamHello = {
+  format: 1,
+  docId: 'playground',
+  title: 'Camp log: Sundarbans cyclone relief',
+  senderName: 'Meher',
+  senderActor: 'm1',
+  size: SIZE,
+};
+
+type View = 'fountain' | 'beam' | 'broadcast' | 'catch' | 'camera';
+const views: [View, string][] = [
+  ['fountain', 'Fountain'],
+  ['beam', 'Beam'],
+  ['broadcast', 'Beam to everyone'],
+  ['catch', 'Catch, no camera'],
+  ['camera', 'Catch, camera'],
+];
+
 export function Playground() {
-  const sender = useMemo(
-    () =>
-      new BeamSender(testPayload(4471, 14 * 1024), 400, {
-        format: 1,
-        docId: 'playground',
-        title: 'Camp log: Sundarbans cyclone relief',
-        senderName: 'Meher',
-        senderActor: 'm1',
-        size: 14 * 1024,
-      }),
-    [],
+  const [view, setView] = useState<View>('fountain');
+  const [run, setRun] = useState(0);
+  const [said, setSaid] = useState('');
+  // What the stand-in camera sees on "Catch, no camera".
+  const [aim, setAim] = useState<'code' | 'away' | 'payment'>('code');
+  const aimRef = useRef(aim);
+  aimRef.current = aim;
+
+  const feed = useMemo<CodeFeed>(() => {
+    const sender = new BeamSender(payload, beamSettings.pieceSize, hello);
+    return (onCodes) => {
+      let i = 0;
+      const timer = setInterval(() => {
+        i++;
+        if (aimRef.current === 'away' || i % 3 === 2) return;
+        onCodes([aimRef.current === 'payment' ? 'upi://pay?pa=shop@bank' : sender.frameText(i + 40)], performance.now());
+      }, 1000 / beamSettings.framesPerSecond);
+      return () => clearInterval(timer);
+    };
+  }, []);
+
+  const show = (v: View) => {
+    setView(v);
+    setSaid('');
+    setRun((n) => n + 1);
+  };
+
+  const onCaught = (bytes: Uint8Array, h: BeamHello | null) => {
+    const same = bytes.length === payload.length && bytes.every((b, i) => b === payload[i]);
+    setSaid(`Caught ${bytes.length} bytes from ${h?.senderName ?? 'someone'}. ${same ? 'Bytes match exactly.' : 'Bytes differ.'}`);
+  };
+
+  return (
+    <div className="play-frame">
+      <nav className="seg play-tabs" aria-label="Playground views">
+        {views.map(([v, name]) => (
+          <button key={v} type="button" aria-pressed={view === v} onClick={() => show(v)}>
+            {name}
+          </button>
+        ))}
+      </nav>
+      {view === 'catch' && (
+        <nav className="seg play-tabs" aria-label="What the stand-in camera sees">
+          <button type="button" aria-pressed={aim === 'code'} onClick={() => setAim('code')}>
+            The code
+          </button>
+          <button type="button" aria-pressed={aim === 'away'} onClick={() => setAim('away')}>
+            Nothing
+          </button>
+          <button type="button" aria-pressed={aim === 'payment'} onClick={() => setAim('payment')}>
+            A payment code
+          </button>
+        </nav>
+      )}
+      {said && (
+        <p className="play-said" role="status">
+          {said}
+        </p>
+      )}
+      <div className="play-screen" key={run}>
+        {view === 'fountain' && <Fountain />}
+        {(view === 'beam' || view === 'broadcast') && (
+          <BeamScreen
+            payload={payload}
+            hello={view === 'broadcast' ? { ...hello, senderName: 'Base camp' } : hello}
+            broadcast={view === 'broadcast'}
+            estimateSeconds={beamSeconds(SIZE)}
+            onStop={() => setSaid('Stop beaming tapped.')}
+            onCatchTheirs={() => show('catch')}
+            onSaveFile={() => setSaid('Save a file tapped.')}
+          />
+        )}
+        {(view === 'catch' || view === 'camera') && (
+          <CatchScreen
+            feed={view === 'catch' ? feed : undefined}
+            onCaught={onCaught}
+            onHello={() => 'continue'}
+            onCancel={() => setSaid('Cancel tapped.')}
+            onUseFile={() => setSaid('Use a file tapped.')}
+          />
+        )}
+      </div>
+    </div>
   );
+}
+
+function Fountain() {
+  const sender = useMemo(() => new BeamSender(payload, 400, hello), []);
   const catcher = useRef(new BeamCatcher());
   const [, redraw] = useState(0);
   const onFrame = (i: number) => {
@@ -52,7 +152,14 @@ export function Playground() {
         <dd className="checksum">{checksumText(sender.beamId)}</dd>
       </dl>
       <div className="btn-row">
-        <button type="button" className="btn" onClick={() => { catcher.current = new BeamCatcher(); redraw((n) => n + 1); }}>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => {
+            catcher.current = new BeamCatcher();
+            redraw((n) => n + 1);
+          }}
+        >
           Catch again
         </button>
       </div>

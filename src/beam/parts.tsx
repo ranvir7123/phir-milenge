@@ -6,25 +6,43 @@ import { CameraError, getReader, listCameras, openCamera, startScanning, stopStr
 import type { BeamSender } from './sender';
 import './beam.css';
 
-/** Shows the sender's frames one after another, `fps` a second, forever. */
-export function BeamCode({ sender, fps, maxSize, onFrame }: { sender: BeamSender; fps: number; maxSize: number; onFrame?(i: number): void }) {
+/**
+ * Shows the sender's frames one after another, `fps` a second, forever. The code is as big as its box
+ * allows: the box's width, or with `fill` its width and height (the box then takes the free space).
+ */
+export function BeamCode({
+  sender,
+  fps,
+  maxSize = Infinity,
+  fill = false,
+  onFrame,
+}: {
+  sender: BeamSender;
+  fps: number;
+  maxSize?: number;
+  fill?: boolean;
+  onFrame?(i: number): void;
+}) {
   const box = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
-  const [width, setWidth] = useState(0);
+  const [room, setRoom] = useState(0);
+  const onFrameRef = useRef(onFrame);
+  onFrameRef.current = onFrame;
 
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const observer = new ResizeObserver(() => setWidth(el.clientWidth));
+    const measure = () => setRoom(fill ? Math.min(el.clientWidth, el.clientHeight) : el.clientWidth);
+    const observer = new ResizeObserver(measure);
     observer.observe(el);
-    setWidth(el.clientWidth);
+    measure();
     return () => observer.disconnect();
-  }, []);
+  }, [fill]);
 
   useEffect(() => {
     const c = canvas.current;
-    if (!c || width === 0) return;
-    const size = Math.min(width, maxSize);
+    if (!c || room <= 0) return;
+    const size = Math.min(room, maxSize);
     const version = qrVersionFor(sender.frameText(0).length);
     const start = performance.now();
     let shown = -1;
@@ -34,18 +52,16 @@ export function BeamCode({ sender, fps, maxSize, onFrame }: { sender: BeamSender
       if (i !== shown) {
         shown = i;
         drawQr(c, sender.frameText(i), size, version);
-        onFrame?.(i);
+        onFrameRef.current?.(i);
       }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-    // onFrame is a report only; restarting the loop for it would reset the frame count.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sender, fps, width, maxSize]);
+  }, [sender, fps, room, maxSize]);
 
   return (
-    <div ref={box} className="beam-code-box">
+    <div ref={box} className={fill ? 'beam-code-box fill' : 'beam-code-box'}>
       <canvas ref={canvas} className="beam-code" aria-label="The moving code" />
     </div>
   );
