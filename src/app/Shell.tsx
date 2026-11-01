@@ -144,7 +144,8 @@ export function Shell() {
             result={screen.result}
             fromName={screen.fromName}
             onBeamBack={() => act.startBeam()}
-            onReadNew={() => act.readNew(layout === 'phone')}
+            // Base camp's laptop types the words in too: "words typing themselves in with each writer's cursor".
+            onReadNew={() => act.readNew(true)}
             onDone={act.caughtDone}
           />
         </div>
