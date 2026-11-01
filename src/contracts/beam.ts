@@ -30,6 +30,8 @@ export interface BeamScreenProps {
   onStop(): void;
   /** "Catch theirs" (hidden when broadcasting). */
   onCatchTheirs?(): void;
+  /** "Save a file" on the Beam screen: the app shell saves the same doc as a .phir file. */
+  onSaveFile?(): void;
 }
 
 export interface CatchScreenProps {
