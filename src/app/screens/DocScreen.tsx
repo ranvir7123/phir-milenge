@@ -22,13 +22,27 @@ export interface DocScreenProps {
 type Local = null | 'menu' | 'panel' | 'saved';
 type Request = { what: 'find' | 'outline' | 'word-count'; at: number } | null;
 
-/** True while the phone's keyboard is up: the Catch and Beam bar hides. */
+/**
+ * True while the phone's keyboard is up: the Catch and Beam bar hides. Compares against the tallest the
+ * screen has been, because Android shrinks the whole page for the keyboard while iPhone shrinks only the
+ * visible part.
+ */
 function useKeyboardOpen(): boolean {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
-    const check = () => setOpen(window.innerHeight - vv.height > 150);
+    let tallest = vv.height;
+    let wide = vv.width;
+    const check = () => {
+      if (vv.width !== wide) {
+        // Turned sideways: start measuring again.
+        wide = vv.width;
+        tallest = vv.height;
+      }
+      tallest = Math.max(tallest, vv.height);
+      setOpen(tallest - vv.height > 150);
+    };
     vv.addEventListener('resize', check);
     return () => vv.removeEventListener('resize', check);
   }, []);

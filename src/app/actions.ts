@@ -96,6 +96,8 @@ export async function saveMe(name: string, place: string): Promise<DeviceRecord>
 /** The first-open buttons. "or open a file" opens the picker straight from the tap. */
 export function firstOpen(name: string, place: string, how: 'new' | 'catch' | 'file'): void {
   if (how === 'file') openFilePicker();
+  // Inside the tap, so the honk is allowed later on iPhone.
+  if (how === 'catch') unlockSound();
   saveMe(name, place)
     .then(() => {
       void store.askToKeep();
