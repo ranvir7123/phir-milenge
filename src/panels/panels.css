@@ -1,0 +1,943 @@
+/* The panels' look. Dark only; colours come from src/shared/tokens.css. Every class starts with pn-. */
+
+.pn {
+  --pn-text: 17px;
+  --pn-small: 14px;
+  --pn-tiny: 13px;
+  --pn-h: 26px;
+  --pn-bar: 3px;
+  --pn-btn: 44px;
+  --pn-btn-bar: 48px;
+  --pn-btn-font: 15px;
+  --pn-gap: 12px;
+  --pn-pad: 16px;
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: var(--pn-text);
+  line-height: 1.5;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Big screen: text 24px (30px on the doc itself), nothing under 22px. A panel inside a big one is big too. */
+.pn.pn-big,
+.pn-big .pn {
+  --pn-text: 24px;
+  --pn-small: 22px;
+  --pn-tiny: 22px;
+  --pn-h: 34px;
+  --pn-bar: 5px;
+  --pn-btn: 60px;
+  --pn-btn-bar: 60px;
+  --pn-btn-font: 24px;
+  --pn-gap: 18px;
+  --pn-pad: 24px;
+  line-height: 1.4;
+}
+
+.pn *,
+.pn *::before,
+.pn *::after {
+  box-sizing: border-box;
+}
+
+.pn h2,
+.pn h3,
+.pn h4,
+.pn p {
+  margin: 0;
+}
+
+.pn-i {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+.pn-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.pn-quiet {
+  color: var(--quiet);
+}
+
+.pn-small {
+  font-size: var(--pn-small);
+}
+
+.pn-tiny {
+  font-size: var(--pn-tiny);
+  color: var(--quiet);
+}
+
+.pn-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- buttons ---------- */
+
+.pn-btn {
+  font-family: var(--font-text);
+  font-size: var(--pn-btn-font);
+  font-weight: 600;
+  line-height: 1.2;
+  min-height: var(--pn-btn);
+  padding: 0 16px;
+  border-radius: 6px;
+  border: 1px solid var(--hairline);
+  background: transparent;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: center;
+  min-width: 0;
+}
+
+.pn-btn:hover {
+  border-color: var(--quiet);
+}
+
+.pn-btn:focus-visible,
+.pn-link:focus-visible,
+.pn-row:focus-visible,
+.pn-choice:focus-within,
+.pn-switch:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.pn-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.pn-btn-main {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--page);
+}
+
+.pn-btn-main:hover {
+  border-color: var(--text);
+}
+
+.pn-btn-beam {
+  background: var(--beam);
+  border-color: var(--beam);
+  color: var(--on-beam);
+}
+
+.pn-btn-beam:hover {
+  border-color: var(--beam);
+}
+
+.pn-btn-bar {
+  min-height: var(--pn-btn-bar);
+  font-size: calc(var(--pn-btn-font) + 1px);
+}
+
+.pn-btn-wide {
+  width: 100%;
+}
+
+.pn-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--quiet);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.pn-acts {
+  display: grid;
+  gap: 10px;
+}
+
+/* ---------- a name with its colour bar ---------- */
+
+.pn-who {
+  border-left: var(--pn-bar) solid var(--c, var(--quiet));
+  padding: 2px 0 2px 10px;
+  line-height: 1.4;
+  min-width: 0;
+}
+
+/* A writer who picked Plain (or hasn't picked) gets a hollow bar: a plain ring, not a colour. */
+.pn-who.pn-plain {
+  border-left-style: double;
+  border-left-color: var(--quiet);
+  border-left-width: calc(var(--pn-bar) + 1px);
+}
+
+/* One side of a two-version choice: who, what, then its Keep button on a line of its own. */
+.pn-lane {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.pn-lane .pn-btn {
+  margin-top: 6px;
+}
+
+.pn-who-name {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pn-who-sub {
+  display: block;
+  color: var(--quiet);
+  font-size: var(--pn-small);
+}
+
+/* ---------- flags ---------- */
+
+.pn-flag {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: calc(var(--pn-text) - 2px);
+  line-height: 1.4;
+  padding: 10px 12px;
+  background: var(--sheet);
+  border-radius: 6px;
+  text-align: left;
+  width: 100%;
+  border: 0;
+  color: var(--text);
+  font-family: var(--font-text);
+}
+
+.pn-big .pn-flag {
+  font-size: var(--pn-text);
+  padding: 14px 16px;
+}
+
+button.pn-flag {
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.pn-flag .pn-i {
+  margin-top: 1px;
+}
+
+.pn-flag b {
+  font-weight: 600;
+}
+
+.pn-flag-bad {
+  border-left: var(--pn-bar) solid var(--warning);
+}
+
+.pn-flag-bad .pn-i,
+.pn-flag-bad b {
+  color: var(--warning);
+}
+
+.pn-warn {
+  color: var(--warning);
+}
+
+/* ---------- the Caught screen ---------- */
+
+.pn-caught {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--page);
+  overflow-x: hidden;
+}
+
+.pn-road {
+  position: relative;
+  height: 50px;
+  overflow: hidden;
+  flex: none;
+}
+
+.pn-big .pn-road {
+  height: 80px;
+}
+
+.pn-lorry {
+  position: absolute;
+  top: 10px;
+  left: 18px;
+  width: 64px;
+  height: 34px;
+}
+
+.pn-big .pn-lorry {
+  width: 110px;
+  height: 58px;
+}
+
+.pn-lorry-drive {
+  animation: pn-drive 1.2s cubic-bezier(0.33, 0, 0.25, 1) both;
+}
+
+@keyframes pn-drive {
+  from {
+    left: -80px;
+  }
+  to {
+    left: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pn-lorry-drive {
+    animation: none;
+  }
+}
+
+.pn-sum {
+  padding: 4px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pn-gap);
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.pn-big .pn-sum {
+  max-width: 1100px;
+  padding: 8px 40px 40px;
+}
+
+.pn-sum h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--pn-h);
+  line-height: 1.2;
+}
+
+.pn-big .pn-sum h2 {
+  font-size: 48px;
+}
+
+.pn-sum .pn-lead {
+  font-size: calc(var(--pn-text) - 1px);
+}
+
+.pn-big .pn-sum .pn-lead {
+  font-size: 30px;
+}
+
+.pn-writers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pn-writers .pn-who {
+  font-size: calc(var(--pn-text) - 2px);
+}
+
+.pn-big .pn-writers .pn-who {
+  font-size: var(--pn-text);
+}
+
+.pn-decisions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--pn-small);
+  color: var(--quiet);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pn-sum .pn-acts {
+  margin-top: auto;
+  padding-top: 6px;
+}
+
+.pn-tbline {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  padding: 8px 12px 8px 8px;
+  color: var(--text);
+  font-family: var(--font-text);
+  cursor: pointer;
+  width: 100%;
+  min-height: 60px;
+}
+
+.pn-tbline:hover {
+  border-color: var(--quiet);
+}
+
+.pn-tbline .pn-truck-art {
+  width: 44px;
+  height: 44px;
+}
+
+.pn-big .pn-tbline .pn-truck-art {
+  width: 72px;
+  height: 72px;
+}
+
+.pn-tbline-words {
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.2;
+  display: block;
+}
+
+.pn-big .pn-tbline-words {
+  font-size: 32px;
+}
+
+.pn-tbline-label {
+  display: block;
+  font-size: var(--pn-tiny);
+  color: var(--quiet);
+}
+
+.pn-even {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--pn-gap);
+  padding: 24px 22px;
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.pn-big .pn-even {
+  max-width: 1000px;
+}
+
+.pn-even h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: calc(var(--pn-h) - 2px);
+  line-height: 1.25;
+}
+
+.pn-big .pn-even h2 {
+  font-size: 48px;
+}
+
+/* ---------- the truck back ---------- */
+
+.pn-truck-art {
+  display: block;
+  flex: none;
+}
+
+.pn-truck-small {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+
+.pn-truck-small .pn-truck-art {
+  width: 56px;
+  height: 56px;
+}
+
+.pn-big .pn-truck-small .pn-truck-art {
+  width: 88px;
+  height: 88px;
+}
+
+.pn-truck-words {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1.2;
+  display: block;
+}
+
+.pn-big .pn-truck-words {
+  font-size: 32px;
+}
+
+.pn-truck-large {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px 16px;
+  text-align: center;
+  width: 100%;
+}
+
+.pn-truck-large .pn-truck-art {
+  width: min(290px, 78vw);
+  height: min(290px, 78vw);
+}
+
+.pn-big.pn-truck-large .pn-truck-art,
+.pn-big .pn-truck-large .pn-truck-art {
+  width: min(520px, 48vh);
+  height: min(520px, 48vh);
+}
+
+.pn-sign {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.pn-big .pn-sign {
+  font-size: 56px;
+}
+
+.pn-slogan {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1.15;
+}
+
+.pn-big .pn-slogan {
+  font-size: 72px;
+}
+
+.pn-plate {
+  display: inline-block;
+  border: 1px solid var(--quiet);
+  border-radius: 4px;
+  padding: 0 8px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.pn-cap {
+  font-size: var(--pn-small);
+  color: var(--quiet);
+  max-width: 34ch;
+}
+
+.pn-big .pn-cap {
+  max-width: 40ch;
+}
+
+.pn-full {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--page);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.pn-full-top {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  flex: none;
+}
+
+.pn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 8px;
+  font-size: calc(var(--pn-text) - 2px);
+  color: var(--quiet);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-text);
+}
+
+.pn-big .pn-back {
+  font-size: var(--pn-text);
+}
+
+.pn-back:hover {
+  color: var(--text);
+}
+
+.pn-full-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- the side panel ---------- */
+
+.pn-side {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: var(--pn-pad);
+  background: var(--page);
+  min-height: 100%;
+}
+
+.pn-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pn-section h3 {
+  font-size: var(--pn-text);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.pn-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  background: var(--sheet);
+  border: 0;
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: var(--pn-text);
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pn-row:hover {
+  background: var(--raised);
+}
+
+.pn-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.pn-row-main > span {
+  display: block;
+}
+
+.pn-row .pn-who-sub {
+  color: var(--quiet);
+}
+
+.pn-rule {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: var(--sheet);
+  border-radius: 6px;
+  line-height: 1.4;
+  border-left: var(--pn-bar) solid transparent;
+}
+
+.pn-rule.pn-rule-bad {
+  border-left-color: var(--warning);
+}
+
+.pn-rule-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.pn-rule-name {
+  font-weight: 600;
+  display: block;
+}
+
+.pn-rule-bad .pn-rule-name {
+  color: var(--warning);
+}
+
+.pn-rule-sub {
+  display: block;
+  font-size: var(--pn-small);
+  color: var(--quiet);
+}
+
+.pn-rule-bad .pn-rule-sub {
+  color: var(--text);
+}
+
+.pn-rule .pn-ok {
+  color: var(--quiet);
+  margin-top: 2px;
+}
+
+.pn-switch-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 48px;
+}
+
+.pn-switch {
+  flex: none;
+  position: relative;
+  width: 52px;
+  height: 32px;
+  border-radius: 16px;
+  border: 1px solid var(--quiet);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* The switch looks 32px tall but takes taps over 46px, so a thumb doesn't miss it. */
+.pn-switch::before {
+  content: '';
+  position: absolute;
+  inset: -8px -4px;
+}
+
+.pn-big .pn-switch {
+  width: 72px;
+  height: 44px;
+  border-radius: 22px;
+}
+
+.pn-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--quiet);
+  transition: transform 0.15s;
+}
+
+.pn-big .pn-switch::after {
+  width: 34px;
+  height: 34px;
+}
+
+.pn-switch[aria-checked='true'] {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.pn-switch[aria-checked='true']::after {
+  transform: translateX(20px);
+  background: var(--page);
+}
+
+.pn-big .pn-switch[aria-checked='true']::after {
+  transform: translateX(28px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pn-switch::after {
+    transition: none;
+  }
+}
+
+.pn-normal {
+  border: 1px dashed var(--hairline);
+  border-radius: 6px;
+  padding: 12px 16px;
+  color: var(--quiet);
+  font-size: var(--pn-small);
+}
+
+.pn-normal b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.pn-banner {
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: var(--raised);
+  font-size: calc(var(--pn-text) - 2px);
+  line-height: 1.4;
+}
+
+.pn-big .pn-banner {
+  font-size: var(--pn-text);
+}
+
+.pn-more {
+  font-size: var(--pn-small);
+  color: var(--quiet);
+}
+
+/* ---------- choices (settle sheet, add a rule) ---------- */
+
+.pn-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.pn-choice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.pn-choice:has(input:checked) {
+  border-color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--text);
+}
+
+.pn-choice input {
+  margin: 4px 0 0;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--text);
+  flex: none;
+}
+
+.pn-big .pn-choice input {
+  width: 28px;
+  height: 28px;
+}
+
+.pn-choice-title {
+  font-weight: 600;
+  display: block;
+}
+
+.pn-choice-sub {
+  display: block;
+  color: var(--quiet);
+  font-size: var(--pn-small);
+}
+
+.pn-select {
+  height: 44px;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  background: var(--raised);
+  color: var(--text);
+  padding: 0 10px;
+  font-weight: 600;
+  max-width: 100%;
+}
+
+.pn-big .pn-select {
+  height: 60px;
+}
+
+.pn-subpage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pn-subpage h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: calc(var(--pn-h) - 4px);
+  line-height: 1.2;
+}
+
+.pn-big .pn-subpage h3 {
+  font-size: 34px;
+}
+
+/* ---------- the playground ---------- */
+
+.pn-play {
+  min-height: 100%;
+  background: var(--page);
+}
+
+.pn-play-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--hairline);
+  position: sticky;
+  top: 0;
+  background: var(--page);
+  z-index: 10;
+}
+
+.pn-play-bar .pn-btn {
+  flex: none;
+  white-space: nowrap;
+  min-height: 36px;
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.pn-play-bar .pn-btn[aria-pressed='true'] {
+  background: var(--raised);
+  border-color: var(--text);
+}
+
+.pn-play-stage {
+  display: flex;
+  justify-content: center;
+}
+
+.pn-play-phone {
+  width: 100%;
+  max-width: 480px;
+  border-left: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
+  min-height: calc(100vh - 57px);
+}
+
+.pn-play-laptop {
+  width: 380px;
+  max-width: 100%;
+  border-left: 1px solid var(--hairline);
+  margin-left: auto;
+  min-height: calc(100vh - 57px);
+}
+
+.pn-play-big {
+  width: 600px;
+  max-width: 100%;
+  margin-left: auto;
+  border-left: 1px solid var(--hairline);
+}
